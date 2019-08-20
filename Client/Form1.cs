@@ -1,5 +1,6 @@
 ﻿using RestSharp;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -23,6 +24,8 @@ namespace Client
             tabControl1.Dock = DockStyle.Fill;
 
             listView1.View = View.Details;
+            listView1.GridLines = true;
+            listView1.FullRowSelect = true;
 
             listView1.Columns.Add("#", 50, HorizontalAlignment.Left);
             listView1.Columns.Add("网址", 150, HorizontalAlignment.Left);
@@ -30,6 +33,7 @@ namespace Client
             listView1.Columns.Add("类别", 75, HorizontalAlignment.Left);
             listView1.Columns.Add("排名", 75, HorizontalAlignment.Left);
 
+            listView1.ColumnClick += ListView1_ColumnClick;
 
 
             tbx_word.TextChanged += (s, e) =>
@@ -48,7 +52,62 @@ namespace Client
 
         }
 
+        public class ListViewItemComparer : IComparer
+        {
+            private int col;
+            private SortOrder SortOrder;
+            public ListViewItemComparer(int cid, SortOrder sortOrder)
+            {
+                col = cid;
+                SortOrder = sortOrder;
+            }
+            public int Compare(object x, object y)
+            {
 
+                int returnVal = -1;
+                var a = ((ListViewItem)x).SubItems[col].Text;
+                var b = ((ListViewItem)y).SubItems[col].Text;
+                if (SortOrder == SortOrder.Ascending)
+                {
+                    returnVal = a.CompareTo(b);
+                    if (col == 4||col==0)
+                    {
+                        returnVal = int.Parse(a.Replace("+", "")).CompareTo(int.Parse(b.Replace("+", "")));
+                    }
+                }
+                else
+                {
+                    returnVal = b.CompareTo(a);
+                    if (col == 4 || col == 0)
+                    {
+                        returnVal = int.Parse(b.Replace("+", "")).CompareTo(int.Parse(a.Replace("+", "")));
+                    }
+
+                }
+                return returnVal;
+            }
+        }
+
+        private void ListView1_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
+            if (listView1.Columns[e.Column].Tag == null)
+            {
+                listView1.Columns[e.Column].Tag = SortOrder.Ascending;
+            }
+            var so = (SortOrder)Enum.Parse(typeof(SortOrder), listView1.Columns[e.Column].Tag.ToString());
+            listView1.ListViewItemSorter = new ListViewItemComparer(e.Column, so);
+            listView1.Sort();
+
+            foreach (ColumnHeader item in listView1.Columns)
+            {
+                item.Text = item.Text.Replace("↓", "").Replace("↑", "").Trim();
+            }
+
+            listView1.Columns[e.Column].Tag = so == SortOrder.Descending ? SortOrder.Ascending : SortOrder.Descending;
+            var tmp = listView1.Columns[e.Column].Text;
+            listView1.Columns[e.Column].Text = so == SortOrder.Descending ? tmp + " ↓" : tmp + " ↑";
+
+        }
 
         private void btn_check_Click(object sender, EventArgs e)
         {
@@ -267,7 +326,7 @@ namespace Client
                         lvi.SubItems.Add(item.Word);
                         lvi.SubItems.Add(item.Device);
                         lvi.SubItems.Add(item.Rank);
-                        lvi.UseItemStyleForSubItems = true;
+                        lvi.UseItemStyleForSubItems = false;
                         listView1.Items.Add(lvi);
                         listView1.EndUpdate();
 
