@@ -191,7 +191,7 @@ namespace Client
                                           respm = clientm.Get(requestm);
                                           htmldoc.LoadHtml(respm.Content);
                                           nodes = htmldoc.DocumentNode.SelectNodes("//div[@class='results']/div[@order][@data-log]");
-                                          nextpage = htmldoc.DocumentNode.SelectSingleNode("//a[@class='new-nextpage-only']");
+                                          nextpage = htmldoc.DocumentNode.SelectSingleNode("//a[@class='new-nextpage-only' or @class='new-nextpage']");
                                           if (nodes != null)
                                           {
                                               nodes.ToList().ForEach(m =>
