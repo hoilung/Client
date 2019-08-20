@@ -15,11 +15,28 @@ namespace Client.Models
 
         public string Device { get; set; } = "pc";
 
+        public string Rank
+        {
+            get
+            {
+                if (SearchNodes != null)
+                {
+                    var model = SearchNodes.FirstOrDefault(m => m.Url.Host.Contains(Host.Replace("www.", "")));
+
+                    if (model != null)
+                    {
+                        return model.Rank;
+                    }
+                }
+                return $"{(SearchNodes != null ? SearchNodes.Count : 100)}+";
+            }
+        }
+
         public override string ToString()
         {
             if (SearchNodes != null)
             {
-                var model = SearchNodes.FirstOrDefault(m => m.Url.Host.Contains(Host.Replace("www.","")));
+                var model = SearchNodes.FirstOrDefault(m => m.Url.Host.Contains(Host.Replace("www.", "")));
 
                 if (model != null)
                 {

@@ -22,6 +22,16 @@ namespace Client
 
             tabControl1.Dock = DockStyle.Fill;
 
+            listView1.View = View.Details;
+
+            listView1.Columns.Add("#", 50, HorizontalAlignment.Left);
+            listView1.Columns.Add("网址", 150, HorizontalAlignment.Left);
+            listView1.Columns.Add("关键词", 120, HorizontalAlignment.Left);
+            listView1.Columns.Add("类别", 75, HorizontalAlignment.Left);
+            listView1.Columns.Add("排名", 75, HorizontalAlignment.Left);
+
+
+
             tbx_word.TextChanged += (s, e) =>
                   {
                       label1.Text = tbx_word.Lines.Length.ToString();
@@ -37,6 +47,8 @@ namespace Client
             comboBox1.SelectedIndex = 0;
 
         }
+
+
 
         private void btn_check_Click(object sender, EventArgs e)
         {
@@ -250,6 +262,15 @@ namespace Client
                         tbx_result.AppendText(item.ToString() + "\r\n");
 
 
+                        var lvi = new ListViewItem(listView1.Items.Count.ToString());
+                        lvi.SubItems.Add(item.Host);
+                        lvi.SubItems.Add(item.Word);
+                        lvi.SubItems.Add(item.Device);
+                        lvi.SubItems.Add(item.Rank);
+                        lvi.UseItemStyleForSubItems = true;
+                        listView1.Items.Add(lvi);
+                        listView1.EndUpdate();
+
                     }));
                 });
                 var file = File.AppendText($"wd-{DateTime.Now.ToString("yyyyMMdd")}.txt");
@@ -268,9 +289,15 @@ namespace Client
 
 
 
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+
+
 
 
         }
-
     }
 }
