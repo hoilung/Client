@@ -47,6 +47,7 @@
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.label5 = new System.Windows.Forms.Label();
+            this.listView2 = new System.Windows.Forms.ListView();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -204,6 +205,7 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.listView2);
             this.tabPage2.Controls.Add(this.listView1);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
@@ -218,7 +220,7 @@
             this.listView1.HideSelection = false;
             this.listView1.Location = new System.Drawing.Point(11, 27);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(514, 412);
+            this.listView1.Size = new System.Drawing.Size(554, 412);
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.List;
@@ -254,6 +256,15 @@
             this.label5.Text = "本软件仅限云无限内部使用，用于批量查询百度pc、百度移动排名网址\r\n\r\n支持多线程并发查询，网络带宽越高，机器越好，速度越快\r\n\r\n1.在excel里面填写好对应" +
     "数据，复制excel内容到查询文本框内\r\n\r\n2.【点击查询】等待进度条完成\r\n\r\n3.查询结果可以再次复制到excel中，进行数据筛选\r\n\r\n4.每次的查询会" +
     "在目录下生成对应文档记录";
+            // 
+            // listView2
+            // 
+            this.listView2.HideSelection = false;
+            this.listView2.Location = new System.Drawing.Point(571, 27);
+            this.listView2.Name = "listView2";
+            this.listView2.Size = new System.Drawing.Size(176, 412);
+            this.listView2.TabIndex = 1;
+            this.listView2.UseCompatibleStateImageBehavior = false;
             // 
             // Form1
             // 
@@ -305,6 +316,7 @@
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.ListView listView2;
     }
 }
 

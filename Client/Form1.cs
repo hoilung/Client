@@ -27,13 +27,21 @@ namespace Client
             listView1.GridLines = true;
             listView1.FullRowSelect = true;
 
-            listView1.Columns.Add("#", 50, HorizontalAlignment.Left);
+            listView1.Columns.Add("#", 35, HorizontalAlignment.Left);
             listView1.Columns.Add("网址", 150, HorizontalAlignment.Left);
             listView1.Columns.Add("关键词", 120, HorizontalAlignment.Left);
             listView1.Columns.Add("类别", 75, HorizontalAlignment.Left);
             listView1.Columns.Add("排名", 75, HorizontalAlignment.Left);
 
             listView1.ColumnClick += ListView1_ColumnClick;
+
+
+            listView2.View = View.Details;
+            listView2.GridLines = true;
+            listView2.FullRowSelect = true;
+            listView2.Columns.Add("#", 35, HorizontalAlignment.Left);
+            listView2.Columns.Add("日期", 120, HorizontalAlignment.Left);
+            listView2.DoubleClick += ListView2_DoubleClick;
 
 
             tbx_word.TextChanged += (s, e) =>
@@ -49,7 +57,62 @@ namespace Client
 
 
             comboBox1.SelectedIndex = 0;
+            InitHistory();
+        }
 
+        private void ListView2_DoubleClick(object sender, EventArgs e)
+        {
+            var items = listView2.SelectedItems;
+            var filename = items[0].SubItems[1].Text;
+            filename = Path.Combine(Directory.GetCurrentDirectory(), "wd-" + filename + ".txt");
+            if (File.Exists(filename))
+            {
+                try
+                {
+                    var lines = File.ReadAllLines(filename);
+                    listView1.Items.Clear();
+                    for (int i = 0; i < lines.Length; i++)
+                    {
+                        var item = lines[i];
+                        var sp = item.Split(new[] { '\t', ' ' });
+                        if (sp.Length > 3)
+                        {
+
+                            var lvi = new ListViewItem(listView1.Items.Count.ToString());
+                            lvi.SubItems.Add(sp[0]);
+                            lvi.SubItems.Add(sp[1]);
+                            lvi.SubItems.Add(sp[2]);
+                            lvi.SubItems.Add(sp[3]);
+                            lvi.UseItemStyleForSubItems = false;
+                            listView1.Items.Add(lvi);
+                            listView1.EndUpdate();
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("提示", "读取文件错误");
+                }
+            }
+        }
+
+
+
+        public void InitHistory()
+        {
+            var dic = Directory.GetFiles(Directory.GetCurrentDirectory(), "wd-*.txt");
+            if (dic != null && dic.Any())
+            {
+                for (int i = 0; i < dic.Length; i++)
+                {
+                    var file = dic[i];
+
+                    var filename = Path.GetFileName(file);
+                    var lvi = new ListViewItem((i + 1).ToString());
+                    lvi.SubItems.Add(Regex.Match(filename, @"\d+").Value);
+                    listView2.Items.Add(lvi);
+                }
+            }
         }
 
         public class ListViewItemComparer : IComparer
@@ -70,7 +133,7 @@ namespace Client
                 if (SortOrder == SortOrder.Ascending)
                 {
                     returnVal = a.CompareTo(b);
-                    if (col == 4||col==0)
+                    if (col == 4 || col == 0)
                     {
                         returnVal = int.Parse(a.Replace("+", "")).CompareTo(int.Parse(b.Replace("+", "")));
                     }
