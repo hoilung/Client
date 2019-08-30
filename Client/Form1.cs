@@ -34,11 +34,12 @@ namespace Client
             listView1.Columns.Add("排名", 75, HorizontalAlignment.Left);
 
             listView1.ColumnClick += ListView1_ColumnClick;
-
+            listView1.ContextMenuStrip = contextMenuStrip1;
+            listView1.MouseClick += ListView1_MouseClick;
 
             listView2.View = View.Details;
             listView2.GridLines = true;
-            listView2.FullRowSelect = true;
+            listView2.FullRowSelect = true;            
             listView2.Columns.Add("#", 35, HorizontalAlignment.Left);
             listView2.Columns.Add("日期", 120, HorizontalAlignment.Left);
             listView2.DoubleClick += ListView2_DoubleClick;
@@ -58,6 +59,14 @@ namespace Client
 
             comboBox1.SelectedIndex = 0;
             InitHistory();
+        }
+
+        private void ListView1_MouseClick(object sender, MouseEventArgs e)
+        {
+            if(e.Button==MouseButtons.Right)
+            {
+                contextMenuStrip1.Show(listView1, e.Location);
+            }
         }
 
         private void ListView2_DoubleClick(object sender, EventArgs e)
