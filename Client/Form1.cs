@@ -27,7 +27,7 @@ namespace Client
             listView1.GridLines = true;
             listView1.FullRowSelect = true;
 
-            listView1.Columns.Add("#", 35, HorizontalAlignment.Left);
+            listView1.Columns.Add("#", 45, HorizontalAlignment.Left);
             listView1.Columns.Add("网址", 150, HorizontalAlignment.Left);
             listView1.Columns.Add("关键词", 120, HorizontalAlignment.Left);
             listView1.Columns.Add("类别", 75, HorizontalAlignment.Left);
@@ -39,12 +39,12 @@ namespace Client
 
             listView2.View = View.Details;
             listView2.GridLines = true;
-            listView2.FullRowSelect = true;            
+            listView2.FullRowSelect = true;
             listView2.Columns.Add("#", 35, HorizontalAlignment.Left);
             listView2.Columns.Add("日期", 120, HorizontalAlignment.Left);
             listView2.DoubleClick += ListView2_DoubleClick;
 
-
+            label7.Text = string.Empty;
             tbx_word.TextChanged += (s, e) =>
                   {
                       label1.Text = tbx_word.Lines.Length.ToString();
@@ -63,7 +63,7 @@ namespace Client
 
         private void ListView1_MouseClick(object sender, MouseEventArgs e)
         {
-            if(e.Button==MouseButtons.Right)
+            if (e.Button == MouseButtons.Right)
             {
                 contextMenuStrip1.Show(listView1, e.Location);
             }
@@ -183,6 +183,7 @@ namespace Client
 
         private void btn_check_Click(object sender, EventArgs e)
         {
+           label7.Text = string.Empty;
 
             var lines = tbx_word.Lines;
 
@@ -214,7 +215,7 @@ namespace Client
             client.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36";
             client.FollowRedirects = false;
 
-            var clientm = new RestClient("https://m.baidu.com");
+            var clientm = new RestClient("https://www.baidu.com");
             clientm.UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1";
 
             words = words.OrderByDescending(m => m.Host).ToList();
@@ -343,6 +344,7 @@ namespace Client
 
                           progressBar1.BeginInvoke(new MethodInvoker(() =>
                           {
+                              
                               progressBar1.PerformStep();
                           }));
                       });
@@ -351,9 +353,11 @@ namespace Client
 
                 Task.WaitAll(task1.ToArray());
 
-
+                int index = 0;
                 words.ForEach(item =>
                 {
+                   
+
                     if (item.SearchNodes != null)
                     {
                         if (item.Device == "pc")
@@ -391,8 +395,6 @@ namespace Client
                     tbx_result.BeginInvoke(new MethodInvoker(() =>
                     {
                         tbx_result.AppendText(item.ToString() + "\r\n");
-
-
                         var lvi = new ListViewItem(listView1.Items.Count.ToString());
                         lvi.SubItems.Add(item.Host);
                         lvi.SubItems.Add(item.Word);
@@ -403,6 +405,14 @@ namespace Client
                         listView1.EndUpdate();
 
                     }));
+                    if (!item.Rank.Contains("+") && item.Rank.Length < 2)
+                    {
+                        var rank = int.Parse(item.Rank);
+                        if (rank > 0 && rank < 11)
+                        {
+                            index += 1;
+                        }
+                    }
                 });
                 var file = File.AppendText($"wd-{DateTime.Now.ToString("yyyyMMdd")}.txt");
                 file.WriteLine($"=========={DateTime.Now.ToString("yyyy-MM-dd HH:mm")}==========");
@@ -412,6 +422,7 @@ namespace Client
 
                 btn_check.BeginInvoke(new MethodInvoker(() =>
                 {
+                    label7.Text = "首页数量：" + index;
                     btn_check.Enabled = true;
                 }));
 

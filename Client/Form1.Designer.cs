@@ -52,6 +52,7 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.label7 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -123,6 +124,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.label7);
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.tbx_result);
             this.groupBox2.Location = new System.Drawing.Point(6, 255);
@@ -291,6 +293,15 @@
             this.ToolStripMenuItem2.Size = new System.Drawing.Size(124, 22);
             this.ToolStripMenuItem2.Text = "复制全部";
             // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(535, 23);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(41, 12);
+            this.label7.TabIndex = 4;
+            this.label7.Text = "label7";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -346,6 +357,7 @@
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem2;
+        private System.Windows.Forms.Label label7;
     }
 }
 
