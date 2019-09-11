@@ -59,6 +59,8 @@ namespace Client
 
             comboBox1.SelectedIndex = 0;
             InitHistory();
+
+
         }
 
         private void ListView1_MouseClick(object sender, MouseEventArgs e)
@@ -183,7 +185,10 @@ namespace Client
 
         private void btn_check_Click(object sender, EventArgs e)
         {
-           label7.Text = string.Empty;
+
+
+
+            label7.Text = string.Empty;
 
             var lines = tbx_word.Lines;
 
@@ -211,12 +216,18 @@ namespace Client
                 return;
             }
 
-            var client = new RestClient("https://www.baidu.com");
+            var client = new RestClient("http://www.baidu.com");
             client.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36";
+            client.CookieContainer = new System.Net.CookieContainer();
             client.FollowRedirects = false;
+            var request = new RestRequest();
+            client.Get(request);
 
-            var clientm = new RestClient("https://www.baidu.com");
+            var clientm = new RestClient("http://www.baidu.com");
             clientm.UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1";
+            clientm.CookieContainer = new System.Net.CookieContainer();
+            var requestm = new RestRequest();
+            clientm.Get(requestm);
 
             words = words.OrderByDescending(m => m.Host).ToList();
             progressBar1.Maximum = words.Count;
@@ -229,159 +240,178 @@ namespace Client
 
             var maxpage = comboBox1.SelectedIndex;
             btn_check.Enabled = false;
-            tbx_result.Text = "";
+            tbx_result.Clear();
             Task.Run(() =>
             {
 
-                var task1 = words.AsParallel().Select(item =>
-                  {
+                words.AsParallel().ForAll(item =>
+                 {
+                     //return Task.Run(() =>
+                     //{
+                     try
+                     {
+                         IRestResponse resp = null;
+                         var htmldoc = new HtmlAgilityPack.HtmlDocument();
+                         if (item.Device == "pc")
+                         {
+                             request.Resource = $"s?ie=utf-8&wd={System.Web.HttpUtility.UrlEncode(item.Word)}";
+                             resp = client.Get(request);
 
-                      return Task.Run(() =>
-                      {
-                          var htmldoc = new HtmlAgilityPack.HtmlDocument();
-                          if (item.Device == "pc")
-                          {
-                              var request = new RestRequest();
-                              request.Resource = $"/s?ie=utf-8&wd={System.Web.HttpUtility.UrlEncode(item.Word)}";
-                              var resp = client.Get(request);
+                             for (int i = 0; i < 2; i++)
+                             {
+                                 if (!resp.IsSuccessful)
+                                 {
+                                     Task.Delay(2000);
+                                     resp = client.Get(request);
+                                 }
+                                 else
+                                 {
+                                     break;
+                                 }
+                             }
 
-                              if (resp.IsSuccessful)
-                              {
-                                  htmldoc.LoadHtml(resp.Content);
-                                  var nodes = htmldoc.DocumentNode.SelectNodes("//div[@id='content_left']/div/h3//a");
-                                  var nextpage = htmldoc.DocumentNode.SelectSingleNode("//*[@id='page']/a[@class='n']");
-                                  if (nodes == null)
-                                      return;
-                                  nodes.ToList().ForEach(m =>
-                                  {
-                                      item.SearchNodes.Add(new Models.SearchNode
-                                      {
-                                          LinkUrl = m.GetAttributeValue("href", ""),
-                                          Rank = m.SelectSingleNode(m.XPath + "/../..").GetAttributeValue("id", "0"),
-                                          Title = m.InnerText
+                             if (resp.IsSuccessful)
+                             {
+                                 htmldoc.LoadHtml(resp.Content);
+                                 var nodes = htmldoc.DocumentNode.SelectNodes("//div[@id='content_left']/div/h3//a");
+                                 var nextpage = htmldoc.DocumentNode.SelectSingleNode("//*[@id='page']/a[@class='n']");
+                                 if (nodes == null)
+                                     return;
+                                 nodes.ToList().ForEach(m =>
+                                 {
+                                     item.SearchNodes.Add(new Models.SearchNode
+                                     {
+                                         LinkUrl = m.GetAttributeValue("href", ""),
+                                         Rank = m.SelectSingleNode(m.XPath + "/../..").GetAttributeValue("id", "0"),
+                                         Title = m.InnerText
 
-                                      });
-                                  });
-                                  #region 剩余页码                                                
-                                  for (int i = 0; i < maxpage; i++)
-                                  {
-                                      if (nextpage != null)
-                                      {
-                                          request.Resource = nextpage.GetAttributeValue("href", "");
-                                          resp = client.Get(request);
-                                          if (resp.IsSuccessful)
-                                          {
-                                              htmldoc.LoadHtml(resp.Content);
-                                              nextpage = htmldoc.DocumentNode.SelectSingleNode("//*[@id='page']/a[@class='n'][2]");
-                                              nodes = htmldoc.DocumentNode.SelectNodes("//div[@id='content_left']/div/h3//a");
-                                              if (nodes != null)
-                                              {
-                                                  nodes.ToList().ForEach(m =>
-                                                  {
-                                                      item.SearchNodes.Add(new Models.SearchNode
-                                                      {
-                                                          LinkUrl = m.GetAttributeValue("href", ""),
-                                                          Rank = m.SelectSingleNode(m.XPath + "/../..").GetAttributeValue("id", "0"),
-                                                          Title = m.InnerText
-                                                      });
-                                                  });
-                                              }
-                                          }
+                                     });
+                                 });
+                                 #region 剩余页码                                                
+                                 for (int i = 0; i < maxpage; i++)
+                                 {
+                                     if (nextpage != null)
+                                     {
+                                         request.Resource = nextpage.GetAttributeValue("href", "");
+                                         resp = client.Get(request);
+                                         if (resp.IsSuccessful)
+                                         {
+                                             htmldoc.LoadHtml(resp.Content);
+                                             nextpage = htmldoc.DocumentNode.SelectSingleNode("//*[@id='page']/a[@class='n'][2]");
+                                             nodes = htmldoc.DocumentNode.SelectNodes("//div[@id='content_left']/div/h3//a");
+                                             if (nodes != null)
+                                             {
+                                                 nodes.ToList().ForEach(m =>
+                                                 {
+                                                     item.SearchNodes.Add(new Models.SearchNode
+                                                     {
+                                                         LinkUrl = m.GetAttributeValue("href", ""),
+                                                         Rank = m.SelectSingleNode(m.XPath + "/../..").GetAttributeValue("id", "0"),
+                                                         Title = m.InnerText
+                                                     });
+                                                 });
+                                             }
+                                         }
 
-                                          //  Console.WriteLine(Task.CurrentId + "-" + i);
+                                         //  Console.WriteLine(Task.CurrentId + "-" + i);
 
-                                      }
-                                  }
-                                  #endregion
-                              }
-                          }
-                          else
-                          {
-                              var requestm = new RestRequest();
-                              requestm.Resource = $"/s?ie=utf-8&wd={System.Web.HttpUtility.UrlEncode(item.Word)}";
-                              var respm = clientm.Get(requestm);
-                              if (respm.IsSuccessful)
-                              {
-                                  htmldoc.LoadHtml(respm.Content);
-                                  var nodes = htmldoc.DocumentNode.SelectNodes("//div[@class='results']/div[@order][@data-log]");
-                                  var nextpage = htmldoc.DocumentNode.SelectSingleNode("//a[@class='new-nextpage-only']");
-                                  nodes.ToList().ForEach(m =>
-                                  {
-                                      var tn = m.SelectSingleNode(m.XPath + "//h3");
-                                      item.SearchNodes.Add(new Models.SearchNode
-                                      {
-                                          Rank = m.GetAttributeValue("order", "0"),
-                                          LinkUrl = Regex.Match(m.GetAttributeValue("data-log", "{'mu':'about:blank'}").Replace("'mu':''", "'mu':'about:blank'"), "(?<='mu':').+(?=')").Value, //string.IsNullOrEmpty(mulnk) ? "about:blank" : mulnk,
-                                          Title = tn != null ? tn.InnerText : ""
-                                      });
-                                  });
-                                  for (int i = 0; i < maxpage; i++)
-                                  {
-                                      if (nextpage != null)
-                                      {
-                                          requestm.Resource = System.Web.HttpUtility.HtmlDecode(nextpage.GetAttributeValue("href", "").Replace("https://m.baidu.com/", ""));
-                                          respm = clientm.Get(requestm);
-                                          htmldoc.LoadHtml(respm.Content);
-                                          nodes = htmldoc.DocumentNode.SelectNodes("//div[@class='results']/div[@order][@data-log]");
-                                          nextpage = htmldoc.DocumentNode.SelectSingleNode("//a[@class='new-nextpage-only' or @class='new-nextpage']");
-                                          if (nodes != null)
-                                          {
-                                              nodes.ToList().ForEach(m =>
-                                              {
-                                                  var tn = m.SelectSingleNode(m.XPath + "//h3");
-                                                  item.SearchNodes.Add(new Models.SearchNode
-                                                  {
-                                                      Rank = maxpage.ToString() + m.GetAttributeValue("order", "0"),
-                                                      LinkUrl = Regex.Match(m.GetAttributeValue("data-log", "{'mu':'about:blank'}").Replace("'mu':''", "'mu':'about:blank'"), "(?<='mu':').+(?=')").Value, //string.IsNullOrEmpty(mulnk) ? "about:blank" : mulnk,
-                                                      Title = tn != null ? tn.InnerText : ""
-                                                  });
-                                              });
-                                          }
-                                      }
-                                  }
-                              }
-                          }
+                                     }
+                                 }
+                                 #endregion
+                             }
+                         }
+                         else
+                         {
+                             requestm.Resource = $"s?ie=utf-8&wd={System.Web.HttpUtility.UrlEncode(item.Word)}";
+                             resp = clientm.Get(requestm);
+                             if (resp.IsSuccessful)
+                             {
+                                 htmldoc.LoadHtml(resp.Content);
+                                 var nodes = htmldoc.DocumentNode.SelectNodes("//div[@class='results']/div[@order][@data-log]");
+                                 var nextpage = htmldoc.DocumentNode.SelectSingleNode("//a[@class='new-nextpage-only']");
+                                 nodes.ToList().ForEach(m =>
+                                 {
+                                     var tn = m.SelectSingleNode(m.XPath + "//h3");
+                                     item.SearchNodes.Add(new Models.SearchNode
+                                     {
+                                         Rank = m.GetAttributeValue("order", "0"),
+                                         LinkUrl = Regex.Match(m.GetAttributeValue("data-log", "{'mu':'about:blank'}").Replace("'mu':''", "'mu':'about:blank'"), "(?<='mu':').+(?=')").Value, //string.IsNullOrEmpty(mulnk) ? "about:blank" : mulnk,
+                                         Title = tn != null ? tn.InnerText : ""
+                                     });
+                                 });
+                                 for (int i = 0; i < maxpage; i++)
+                                 {
+                                     if (nextpage != null)
+                                     {
+                                         requestm.Resource = System.Web.HttpUtility.HtmlDecode(nextpage.GetAttributeValue("href", "").Replace("https://www.baidu.com/", ""));
+                                         resp = clientm.Get(requestm);
+                                         htmldoc.LoadHtml(resp.Content);
+                                         nodes = htmldoc.DocumentNode.SelectNodes("//div[@class='results']/div[@order][@data-log]");
+                                         nextpage = htmldoc.DocumentNode.SelectSingleNode("//a[@class='new-nextpage-only' or @class='new-nextpage']");
+                                         if (nodes != null)
+                                         {
+                                             nodes.ToList().ForEach(m =>
+                                             {
+                                                 var tn = m.SelectSingleNode(m.XPath + "//h3");
+                                                 item.SearchNodes.Add(new Models.SearchNode
+                                                 {
+                                                     Rank = maxpage.ToString() + m.GetAttributeValue("order", "0"),
+                                                     LinkUrl = Regex.Match(m.GetAttributeValue("data-log", "{'mu':'about:blank'}").Replace("'mu':''", "'mu':'about:blank'"), "(?<='mu':').+(?=')").Value, //string.IsNullOrEmpty(mulnk) ? "about:blank" : mulnk,
+                                                     Title = tn != null ? tn.InnerText : ""
+                                                 });
+                                             });
+                                         }
+                                     }
+                                 }
+                             }
+                         }
 
-                          progressBar1.BeginInvoke(new MethodInvoker(() =>
-                          {
-                              
-                              progressBar1.PerformStep();
-                          }));
-                      });
+                         progressBar1.BeginInvoke(new MethodInvoker(() =>
+                         {
+                             if (resp != null)
+                             {
+                                 toolTip1.Show(resp.IsSuccessful ? "正常" : "失败", label7);
+                             }
+                             label7.Text = item.Word;
+                             progressBar1.PerformStep();
+                         }));
+                         //  });
+                     }
+                     catch (Exception ex)
+                     {
+                         Console.WriteLine(ex);
+                     }
 
-                  });
+                 });
 
-                Task.WaitAll(task1.ToArray());
+                //  Task.WaitAll(task1.ToArray());
 
                 int index = 0;
                 words.ForEach(item =>
                 {
-                   
-
                     if (item.SearchNodes != null)
                     {
                         if (item.Device == "pc")
                         {
-                            var tasks = item.SearchNodes.AsParallel().Select(m =>
-                            {
-                                return Task.Run(() =>
-                                {
-                                    var request2 = new RestRequest();
-                                    request2.Resource = m.LinkUrl.Replace("http://www.baidu.com/", "");
-                                    var resp2 = client.Head(request2);
-                                    if (resp2.StatusCode == System.Net.HttpStatusCode.Found)
-                                    {
-                                        var l = resp2.Headers.FirstOrDefault(f => f.Name == "Location");
-                                        if (l != null)
-                                        {
-                                            m.Url = new Uri(l.Value.ToString());
-                                            Console.WriteLine(m.Url);
-                                        }
-                                    }
-                                });
-                            });
+                            item.SearchNodes.AsParallel().ForAll(m =>
+                             {
+                                 //return Task.Run(() =>
+                                 //{
+                                 var request2 = new RestRequest();
+                                 request2.Resource = m.LinkUrl.Replace("http://www.baidu.com/", "");
+                                 var resp2 = client.Head(request2);
+                                 if (resp2.StatusCode == System.Net.HttpStatusCode.Found)
+                                 {
+                                     var l = resp2.Headers.FirstOrDefault(f => f.Name == "Location");
+                                     if (l != null)
+                                     {
+                                         m.Url = new Uri(l.Value.ToString());
+                                     }
+                                 }
+                                 // });
+                             });
 
-                            Task.WaitAll(tasks.ToArray());
+                            // Task.WaitAll(tasks.ToArray());
                         }
                         else
                         {
@@ -402,7 +432,7 @@ namespace Client
                         lvi.SubItems.Add(item.Rank);
                         lvi.UseItemStyleForSubItems = false;
                         listView1.Items.Add(lvi);
-                        listView1.EndUpdate();
+
 
                     }));
                     if (!item.Rank.Contains("+") && item.Rank.Length < 2)
@@ -414,6 +444,7 @@ namespace Client
                         }
                     }
                 });
+                listView1.EndUpdate();
                 var file = File.AppendText($"wd-{DateTime.Now.ToString("yyyyMMdd")}.txt");
                 file.WriteLine($"=========={DateTime.Now.ToString("yyyy-MM-dd HH:mm")}==========");
                 file.WriteLine(tbx_result.Text);
