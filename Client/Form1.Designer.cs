@@ -30,6 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -54,7 +55,9 @@
             this.ToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.linkControl1 = new Client.Control.LinkControl();
             this.tabControl1.SuspendLayout();
+            this.tabPage4.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -66,6 +69,7 @@
             // 
             // tabControl1
             // 
+            this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
@@ -74,6 +78,17 @@
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(772, 485);
             this.tabControl1.TabIndex = 0;
+            // 
+            // tabPage4
+            // 
+            this.tabPage4.Controls.Add(this.linkControl1);
+            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage4.Size = new System.Drawing.Size(764, 459);
+            this.tabPage4.TabIndex = 3;
+            this.tabPage4.Text = "外链发布";
+            this.tabPage4.UseVisualStyleBackColor = true;
             // 
             // tabPage1
             // 
@@ -307,6 +322,13 @@
             // 
             this.toolTip1.ShowAlways = true;
             // 
+            // linkControl1
+            // 
+            this.linkControl1.Location = new System.Drawing.Point(6, 6);
+            this.linkControl1.Name = "linkControl1";
+            this.linkControl1.Size = new System.Drawing.Size(675, 391);
+            this.linkControl1.TabIndex = 0;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -320,8 +342,9 @@
             this.Name = "Form1";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "百度排名查询";
+            this.Text = "站群小工具";
             this.tabControl1.ResumeLayout(false);
+            this.tabPage4.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -364,6 +387,8 @@
         private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem2;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.TabPage tabPage4;
+        private Control.LinkControl linkControl1;
     }
 }
 
