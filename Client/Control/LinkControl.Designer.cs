@@ -28,10 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.label5 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.lb_total = new System.Windows.Forms.Label();
             this.lb_current = new System.Windows.Forms.Label();
@@ -43,15 +43,17 @@
             this.tbx_urls = new System.Windows.Forms.TextBox();
             this.btn_pub = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.btn_clearLink = new System.Windows.Forms.Button();
+            this.btn_reLink = new System.Windows.Forms.Button();
+            this.label6 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.btn_add = new System.Windows.Forms.Button();
             this.tbx_outlink = new System.Windows.Forms.TextBox();
             this.lv_link = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.label6 = new System.Windows.Forms.Label();
-            this.btn_reLink = new System.Windows.Forms.Button();
-            this.btn_clearLink = new System.Windows.Forms.Button();
+            this.label8 = new System.Windows.Forms.Label();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -70,8 +72,8 @@
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.label5);
             this.tabPage1.Controls.Add(this.label8);
+            this.tabPage1.Controls.Add(this.label5);
             this.tabPage1.Controls.Add(this.label7);
             this.tabPage1.Controls.Add(this.lb_total);
             this.tabPage1.Controls.Add(this.lb_current);
@@ -99,19 +101,10 @@
             this.label5.TabIndex = 12;
             this.label5.Text = "网站列表共0个";
             // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(70, 356);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(269, 48);
-            this.label8.TabIndex = 11;
-            this.label8.Text = "要发布的外链网站每行一个，点【开始发布】即可\r\n例如:\r\nwww.baidu.com\r\nwww.baidu2.com";
-            // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 356);
+            this.label7.Location = new System.Drawing.Point(6, 324);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(41, 12);
             this.label7.TabIndex = 10;
@@ -120,7 +113,7 @@
             // lb_total
             // 
             this.lb_total.AutoSize = true;
-            this.lb_total.Location = new System.Drawing.Point(575, 324);
+            this.lb_total.Location = new System.Drawing.Point(575, 292);
             this.lb_total.Name = "lb_total";
             this.lb_total.Size = new System.Drawing.Size(23, 12);
             this.lb_total.TabIndex = 9;
@@ -129,7 +122,7 @@
             // lb_current
             // 
             this.lb_current.AutoSize = true;
-            this.lb_current.Location = new System.Drawing.Point(575, 295);
+            this.lb_current.Location = new System.Drawing.Point(575, 263);
             this.lb_current.Name = "lb_current";
             this.lb_current.Size = new System.Drawing.Size(23, 12);
             this.lb_current.TabIndex = 8;
@@ -138,7 +131,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 328);
+            this.label4.Location = new System.Drawing.Point(6, 296);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(41, 12);
             this.label4.TabIndex = 7;
@@ -147,7 +140,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 299);
+            this.label3.Location = new System.Drawing.Point(6, 267);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(53, 12);
             this.label3.TabIndex = 6;
@@ -155,7 +148,7 @@
             // 
             // progressBar2
             // 
-            this.progressBar2.Location = new System.Drawing.Point(70, 323);
+            this.progressBar2.Location = new System.Drawing.Point(70, 291);
             this.progressBar2.Name = "progressBar2";
             this.progressBar2.Size = new System.Drawing.Size(497, 18);
             this.progressBar2.Step = 1;
@@ -163,7 +156,7 @@
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(70, 295);
+            this.progressBar1.Location = new System.Drawing.Point(70, 263);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(497, 18);
             this.progressBar1.Step = 1;
@@ -184,7 +177,7 @@
             this.tbx_urls.Multiline = true;
             this.tbx_urls.Name = "tbx_urls";
             this.tbx_urls.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.tbx_urls.Size = new System.Drawing.Size(497, 270);
+            this.tbx_urls.Size = new System.Drawing.Size(497, 239);
             this.tbx_urls.TabIndex = 1;
             this.tbx_urls.WordWrap = false;
             this.tbx_urls.TextChanged += new System.EventHandler(this.tbx_urls_TextChanged);
@@ -215,6 +208,35 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "外链管理";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // btn_clearLink
+            // 
+            this.btn_clearLink.Location = new System.Drawing.Point(573, 92);
+            this.btn_clearLink.Name = "btn_clearLink";
+            this.btn_clearLink.Size = new System.Drawing.Size(75, 23);
+            this.btn_clearLink.TabIndex = 6;
+            this.btn_clearLink.Text = "清空外链";
+            this.btn_clearLink.UseVisualStyleBackColor = true;
+            this.btn_clearLink.Click += new System.EventHandler(this.btn_clearLink_Click);
+            // 
+            // btn_reLink
+            // 
+            this.btn_reLink.Location = new System.Drawing.Point(573, 121);
+            this.btn_reLink.Name = "btn_reLink";
+            this.btn_reLink.Size = new System.Drawing.Size(75, 23);
+            this.btn_reLink.TabIndex = 5;
+            this.btn_reLink.Text = "重置外链";
+            this.btn_reLink.UseVisualStyleBackColor = true;
+            this.btn_reLink.Click += new System.EventHandler(this.btn_reLink_Click);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 19);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(53, 12);
+            this.label6.TabIndex = 4;
+            this.label6.Text = "新增外链";
             // 
             // label1
             // 
@@ -269,34 +291,19 @@
             this.columnHeader2.Text = "外链地址";
             this.columnHeader2.Width = 500;
             // 
-            // label6
+            // label8
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 19);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(53, 12);
-            this.label6.TabIndex = 4;
-            this.label6.Text = "新增外链";
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(68, 324);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(269, 48);
+            this.label8.TabIndex = 13;
+            this.label8.Text = "要发布的外链网站每行一个，点【开始发布】即可\r\n例如:\r\nwww.baidu.com\r\nwww.baidu2.com";
             // 
-            // btn_reLink
+            // toolTip1
             // 
-            this.btn_reLink.Location = new System.Drawing.Point(573, 121);
-            this.btn_reLink.Name = "btn_reLink";
-            this.btn_reLink.Size = new System.Drawing.Size(75, 23);
-            this.btn_reLink.TabIndex = 5;
-            this.btn_reLink.Text = "重置外链";
-            this.btn_reLink.UseVisualStyleBackColor = true;
-            this.btn_reLink.Click += new System.EventHandler(this.btn_reLink_Click);
-            // 
-            // btn_clearLink
-            // 
-            this.btn_clearLink.Location = new System.Drawing.Point(573, 92);
-            this.btn_clearLink.Name = "btn_clearLink";
-            this.btn_clearLink.Size = new System.Drawing.Size(75, 23);
-            this.btn_clearLink.TabIndex = 6;
-            this.btn_clearLink.Text = "清空外链";
-            this.btn_clearLink.UseVisualStyleBackColor = true;
-            this.btn_clearLink.Click += new System.EventHandler(this.btn_clearLink_Click);
+            this.toolTip1.ShowAlways = true;
+            this.toolTip1.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
             // 
             // LinkControl
             // 
@@ -332,7 +339,6 @@
         private System.Windows.Forms.Label lb_current;
         private System.Windows.Forms.Label lb_total;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Label label8;
         private System.Windows.Forms.ListView lv_link;
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
@@ -340,5 +346,7 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button btn_reLink;
         private System.Windows.Forms.Button btn_clearLink;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }

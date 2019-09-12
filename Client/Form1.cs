@@ -222,18 +222,11 @@ namespace Client
                 return;
             }
 
-            var client = new RestClient("http://www.baidu.com");
-            client.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36";
-            client.CookieContainer = new System.Net.CookieContainer();
-            client.FollowRedirects = false;
-            var request = new RestRequest();
-            client.Get(request);
 
-            var clientm = new RestClient("http://www.baidu.com");
-            clientm.UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1";
-            clientm.CookieContainer = new System.Net.CookieContainer();
-            var requestm = new RestRequest();
-            clientm.Get(requestm);
+
+
+
+
 
             words = words.OrderByDescending(m => m.Host).ToList();
             progressBar1.Maximum = words.Count;
@@ -250,19 +243,28 @@ namespace Client
             Task.Run(() =>
             {
 
+
                 words.AsParallel().ForAll(item =>
                  {
-                     //return Task.Run(() =>
-                     //{
+
                      try
                      {
-                         IRestResponse resp = null;
+                         var client = new RestClient("http://www.baidu.com");
+                         client.CookieContainer = new System.Net.CookieContainer();
+                         client.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36";
+                         client.FollowRedirects = false;
+
+                         var status = "";
+                         var request = new RestRequest();
                          var htmldoc = new HtmlAgilityPack.HtmlDocument();
                          if (item.Device == "pc")
                          {
-                             request.Resource = $"s?ie=utf-8&wd={System.Web.HttpUtility.UrlEncode(item.Word)}";
-                             resp = client.Get(request);
 
+                             #region pc
+
+
+                             request.Resource = $"s?ie=utf-8&wd={System.Web.HttpUtility.UrlEncode(item.Word)}";
+                             var resp = client.Get(request);
                              for (int i = 0; i < 2; i++)
                              {
                                  if (!resp.IsSuccessful)
@@ -275,9 +277,9 @@ namespace Client
                                      break;
                                  }
                              }
-
                              if (resp.IsSuccessful)
                              {
+                                 status = resp.StatusCode.ToString();
                                  htmldoc.LoadHtml(resp.Content);
                                  var nodes = htmldoc.DocumentNode.SelectNodes("//div[@id='content_left']/div/h3//a");
                                  var nextpage = htmldoc.DocumentNode.SelectSingleNode("//*[@id='page']/a[@class='n']");
@@ -325,13 +327,21 @@ namespace Client
                                  }
                                  #endregion
                              }
+
+                             #endregion
                          }
                          else
                          {
-                             requestm.Resource = $"s?ie=utf-8&wd={System.Web.HttpUtility.UrlEncode(item.Word)}";
-                             resp = clientm.Get(requestm);
+                             #region mobile
+
+                             client.UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1";
+
+                             request.Resource = $"s?ie=utf-8&wd={System.Web.HttpUtility.UrlEncode(item.Word)}";
+                             var resp = client.Get(request);
                              if (resp.IsSuccessful)
                              {
+                                 status = resp.StatusCode.ToString();
+
                                  htmldoc.LoadHtml(resp.Content);
                                  var nodes = htmldoc.DocumentNode.SelectNodes("//div[@class='results']/div[@order][@data-log]");
                                  var nextpage = htmldoc.DocumentNode.SelectSingleNode("//a[@class='new-nextpage-only']");
@@ -349,8 +359,8 @@ namespace Client
                                  {
                                      if (nextpage != null)
                                      {
-                                         requestm.Resource = System.Web.HttpUtility.HtmlDecode(nextpage.GetAttributeValue("href", "").Replace("https://www.baidu.com/", ""));
-                                         resp = clientm.Get(requestm);
+                                         request.Resource = System.Web.HttpUtility.HtmlDecode(nextpage.GetAttributeValue("href", "").Replace("https://www.baidu.com/", ""));
+                                         resp = client.Get(request);
                                          htmldoc.LoadHtml(resp.Content);
                                          nodes = htmldoc.DocumentNode.SelectNodes("//div[@class='results']/div[@order][@data-log]");
                                          nextpage = htmldoc.DocumentNode.SelectSingleNode("//a[@class='new-nextpage-only' or @class='new-nextpage']");
@@ -370,14 +380,14 @@ namespace Client
                                      }
                                  }
                              }
+                             #endregion
                          }
 
                          progressBar1.BeginInvoke(new MethodInvoker(() =>
                          {
-                             if (resp != null)
-                             {
-                                 toolTip1.Show(resp.IsSuccessful ? "正常" : "失败", label7);
-                             }
+
+                           //  toolTip1.Show(status, label7);
+
                              label7.Text = item.Word;
                              progressBar1.PerformStep();
                          }));
@@ -390,10 +400,13 @@ namespace Client
 
                  });
 
-                //  Task.WaitAll(task1.ToArray());
 
+                var client2 = new RestClient("http://www.baidu.com");
+                client2.CookieContainer = new System.Net.CookieContainer();
+                client2.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36";
+                client2.FollowRedirects = false;
                 int index = 0;
-                words.ForEach(item =>
+                words.AsParallel().ForAll(item =>
                 {
                     if (item.SearchNodes != null)
                     {
@@ -405,7 +418,7 @@ namespace Client
                                  //{
                                  var request2 = new RestRequest();
                                  request2.Resource = m.LinkUrl.Replace("http://www.baidu.com/", "");
-                                 var resp2 = client.Head(request2);
+                                 var resp2 = client2.Head(request2);
                                  if (resp2.StatusCode == System.Net.HttpStatusCode.Found)
                                  {
                                      var l = resp2.Headers.FirstOrDefault(f => f.Name == "Location");
