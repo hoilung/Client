@@ -245,7 +245,7 @@
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage2.Size = new System.Drawing.Size(764, 459);
             this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "查询记录";
+            this.tabPage2.Text = "排名记录";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // listView2

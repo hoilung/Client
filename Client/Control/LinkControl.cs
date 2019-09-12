@@ -187,12 +187,12 @@ namespace Client.Control
             }
             if (File.Exists(_linkPath))
             {
-                File.AppendText(sb.ToString());
+                File.AppendAllText(_linkPath, sb.ToString());
             }
 
-            MessageBox.Show($"新增有效外链{add}个", "提示", MessageBoxButtons.OK);
-            lv_link.Items.Clear();
-            initLink();
+            MessageBox.Show($"新增有效外链{add}个,重新启动软件加载最新外链", "提示", MessageBoxButtons.OK);
+          //  lv_link.Items.Clear();
+           // initLink();
 
 
         }
@@ -204,7 +204,7 @@ namespace Client.Control
                 File.Delete(_linkPath);
                 ReleaseLink();
                 MessageBox.Show("操作成功,重新启动软件加载最新外链", "提示");
-                
+
             }
             catch (Exception)
             {
