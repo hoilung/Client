@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -292,11 +293,9 @@
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(30, 43);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(377, 132);
+            this.label5.Size = new System.Drawing.Size(353, 204);
             this.label5.TabIndex = 0;
-            this.label5.Text = "本软件仅限云无限内部使用，用于批量查询百度pc、百度移动排名网址\r\n\r\n支持多线程并发查询，网络带宽越高，机器越好，速度越快\r\n\r\n1.在excel里面填写好对应" +
-    "数据，复制excel内容到查询文本框内\r\n\r\n2.【点击查询】等待进度条完成\r\n\r\n3.查询结果可以再次复制到excel中，进行数据筛选\r\n\r\n4.每次的查询会" +
-    "在目录下生成对应文档记录";
+            this.label5.Text = resources.GetString("label5.Text");
             // 
             // contextMenuStrip1
             // 
@@ -326,7 +325,7 @@
             // 
             this.linkControl1.Location = new System.Drawing.Point(6, 6);
             this.linkControl1.Name = "linkControl1";
-            this.linkControl1.Size = new System.Drawing.Size(675, 391);
+            this.linkControl1.Size = new System.Drawing.Size(713, 434);
             this.linkControl1.TabIndex = 0;
             // 
             // Form1

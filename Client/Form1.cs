@@ -20,6 +20,9 @@ namespace Client
         public Form1()
         {
             InitializeComponent();
+            SetStyle(ControlStyles.ResizeRedraw, true);
+            SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+            SetStyle(ControlStyles.AllPaintingInWmPaint, true);
             this.Text += " V" + this.ProductVersion;
 
             tabControl1.Dock = DockStyle.Fill;
@@ -56,28 +59,12 @@ namespace Client
 
                 label2.Text = tbx_result.Lines.Length.ToString();
             };
-            
+
 
             comboBox1.SelectedIndex = 0;
             InitHistory();
-            if (!File.Exists("link.dat"))
-            {
-                try
-                {
 
-                    //File.WriteAllText("link.dat", file, Encoding.UTF8);
-                    Stream sm = Assembly.GetExecutingAssembly().GetManifestResourceStream("Client.link.txt");
-                    byte[] bs = new byte[sm.Length];
-                    sm.Read(bs, 0, (int)sm.Length);
-                    sm.Close();
-                    File.WriteAllBytes("link.dat", bs);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("外链创建失败", "提示");
-                    
-                }
-            }
+            linkControl1.ReleaseLink();
             linkControl1.Dock = DockStyle.Fill;
 
         }
