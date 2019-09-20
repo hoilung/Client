@@ -60,6 +60,18 @@
     <Compile Include="Control\LinkControl.Designer.cs">
       <DependentUpon>LinkControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Control\RankControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Control\RankControl.Designer.cs">
+      <DependentUpon>RankControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Control\WordControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Control\WordControl.Designer.cs">
+      <DependentUpon>WordControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -72,6 +84,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Control\LinkControl.resx">
       <DependentUpon>LinkControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Control\RankControl.resx">
+      <DependentUpon>RankControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Control\WordControl.resx">
+      <DependentUpon>WordControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>

@@ -31,6 +31,7 @@
             this.components = new System.ComponentModel.Container();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.label8 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.lb_total = new System.Windows.Forms.Label();
@@ -52,7 +53,6 @@
             this.lv_link = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.label8 = new System.Windows.Forms.Label();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -89,8 +89,17 @@
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage1.Size = new System.Drawing.Size(752, 424);
             this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "批量发布";
+            this.tabPage1.Text = "外链发布";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(68, 324);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(269, 48);
+            this.label8.TabIndex = 13;
+            this.label8.Text = "要发布的外链网站每行一个，点【开始发布】即可\r\n例如:\r\nwww.baidu.com\r\nwww.baidu2.com";
             // 
             // label5
             // 
@@ -290,15 +299,6 @@
             // 
             this.columnHeader2.Text = "外链地址";
             this.columnHeader2.Width = 500;
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(68, 324);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(269, 48);
-            this.label8.TabIndex = 13;
-            this.label8.Text = "要发布的外链网站每行一个，点【开始发布】即可\r\n例如:\r\nwww.baidu.com\r\nwww.baidu2.com";
             // 
             // toolTip1
             // 
