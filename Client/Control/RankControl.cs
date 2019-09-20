@@ -365,7 +365,7 @@ namespace Client.Control
                             #endregion
                         }
 
-                        progressBar1.BeginInvoke(new MethodInvoker(() =>
+                        progressBar1.Invoke(new MethodInvoker(() =>
                         {
 
                             //  toolTip1.Show(status, label7);
@@ -454,7 +454,7 @@ namespace Client.Control
 
                 btn_check.BeginInvoke(new MethodInvoker(() =>
                 {
-                    label7.Text = "首页数量：" + index;
+                    label7.Text = "查询完成：首页数量 " + index;
                     btn_check.Enabled = true;
                 }));
 

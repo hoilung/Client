@@ -20,6 +20,10 @@ namespace Client.Control
             InitializeComponent();
             tabControl1.Dock = DockStyle.Fill;
             cbx_device.SelectedIndex = 0;
+            tbx_urls.TextChanged += (s, e) =>
+            {
+                label2.Text = "列表行数:" + tbx_urls.Lines.Length;
+            };
         }
 
         private CancellationTokenSource cancellationToken = null;

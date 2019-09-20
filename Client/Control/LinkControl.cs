@@ -77,7 +77,7 @@ namespace Client.Control
         }
 
         private void tbx_urls_TextChanged(object sender, EventArgs e)
-        {            
+        {
             label5.Text = $"网站列表共{tbx_urls.Lines.Length}个";
         }
 
@@ -104,9 +104,11 @@ namespace Client.Control
             }
 
             btn_pub.Text = "取消发布";
+            tbx_urls.Enabled = false;
             cancellationTokenSource = new CancellationTokenSource();
             cancellationTokenSource.Token.Register(() =>
             {
+                tbx_urls.Enabled = true;
                 btn_pub.Text = "开始发布";
             });
 
@@ -137,7 +139,7 @@ namespace Client.Control
                         }));
 
                         int a = 0;
-                        links.AsParallel().ForAll(m =>
+                        links.Take(100).AsParallel().ForAll(m =>
                         {
                             try
                             {
@@ -157,8 +159,9 @@ namespace Client.Control
                                     {
                                         progressBar1.Value = a;
                                         lb_current.Text = $"{a}/{progressBar1.Maximum}";
-                                        toolTip1.ToolTipTitle = $"{u} {status}";
-                                        toolTip1.Show(request.Resource, label8);
+                                        // toolTip1.ToolTipTitle = $"{u} {status}";
+                                        //toolTip1.Show(request.Resource, label8);
+                                        label9.Text = $"{u} {status}\r\n{request.Resource}";
                                     }));
 
                             }
@@ -170,7 +173,12 @@ namespace Client.Control
                         Task.Delay(2000);
 
                     });
-
+                    tbx_urls.Invoke(new MethodInvoker(() =>
+                    {
+                        tbx_urls.Enabled = true;
+                        btn_pub.Text = "开始发布";
+                        label9.Text = "当前任务完成";
+                    }));
                 }
                 catch (Exception)
                 {

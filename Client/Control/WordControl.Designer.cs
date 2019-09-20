@@ -103,8 +103,7 @@
             this.cbx_device.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbx_device.FormattingEnabled = true;
             this.cbx_device.Items.AddRange(new object[] {
-            "pc",
-            "mobile"});
+            "pc"});
             this.cbx_device.Location = new System.Drawing.Point(475, 22);
             this.cbx_device.Name = "cbx_device";
             this.cbx_device.Size = new System.Drawing.Size(128, 20);
@@ -137,7 +136,6 @@
             this.tbx_urls.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.tbx_urls.Size = new System.Drawing.Size(463, 87);
             this.tbx_urls.TabIndex = 0;
-            this.tbx_urls.Text = "www.soupv.com";
             this.tbx_urls.WordWrap = false;
             // 
             // groupBox1
@@ -219,9 +217,9 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(475, 95);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(77, 12);
+            this.label2.Size = new System.Drawing.Size(53, 12);
             this.label2.TabIndex = 4;
-            this.label2.Text = "查询网址数量";
+            this.label2.Text = "查询数量";
             // 
             // WordControl
             // 

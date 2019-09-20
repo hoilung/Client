@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.label8 = new System.Windows.Forms.Label();
@@ -53,7 +52,8 @@
             this.lv_link = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.label9 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -67,11 +67,13 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(760, 450);
+            this.tabControl1.Size = new System.Drawing.Size(800, 513);
             this.tabControl1.TabIndex = 0;
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.label10);
+            this.tabPage1.Controls.Add(this.label9);
             this.tabPage1.Controls.Add(this.label8);
             this.tabPage1.Controls.Add(this.label5);
             this.tabPage1.Controls.Add(this.label7);
@@ -87,7 +89,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(752, 424);
+            this.tabPage1.Size = new System.Drawing.Size(792, 487);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "外链发布";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -104,7 +106,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(573, 14);
+            this.label5.Location = new System.Drawing.Point(575, 53);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(83, 12);
             this.label5.TabIndex = 12;
@@ -193,7 +195,7 @@
             // 
             // btn_pub
             // 
-            this.btn_pub.Location = new System.Drawing.Point(575, 29);
+            this.btn_pub.Location = new System.Drawing.Point(577, 14);
             this.btn_pub.Name = "btn_pub";
             this.btn_pub.Size = new System.Drawing.Size(75, 23);
             this.btn_pub.TabIndex = 0;
@@ -300,10 +302,24 @@
             this.columnHeader2.Text = "外链地址";
             this.columnHeader2.Width = 500;
             // 
-            // toolTip1
+            // label9
             // 
-            this.toolTip1.ShowAlways = true;
-            this.toolTip1.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
+            this.label9.AutoSize = true;
+            this.label9.ForeColor = System.Drawing.SystemColors.InfoText;
+            this.label9.Location = new System.Drawing.Point(68, 399);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(41, 12);
+            this.label9.TabIndex = 14;
+            this.label9.Text = "待执行";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(6, 399);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(29, 12);
+            this.label10.TabIndex = 15;
+            this.label10.Text = "状态";
             // 
             // LinkControl
             // 
@@ -311,7 +327,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.tabControl1);
             this.Name = "LinkControl";
-            this.Size = new System.Drawing.Size(760, 450);
+            this.Size = new System.Drawing.Size(800, 513);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
@@ -347,6 +363,7 @@
         private System.Windows.Forms.Button btn_reLink;
         private System.Windows.Forms.Button btn_clearLink;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label10;
     }
 }
