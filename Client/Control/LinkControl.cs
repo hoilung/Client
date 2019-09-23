@@ -139,7 +139,7 @@ namespace Client.Control
                         }));
 
                         int a = 0;
-                        links.Take(100).AsParallel().ForAll(m =>
+                        links.AsParallel().ForAll(m =>
                         {
                             try
                             {
