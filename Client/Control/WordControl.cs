@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Threading;
 using RestSharp;
+using System.IO;
 
 namespace Client.Control
 {
@@ -24,6 +25,7 @@ namespace Client.Control
             {
                 label2.Text = "列表行数:" + tbx_urls.Lines.Length;
             };
+
         }
 
         private CancellationTokenSource cancellationToken = null;
@@ -49,11 +51,11 @@ namespace Client.Control
             cancellationToken = new CancellationTokenSource();
             cancellationToken.Token.Register(() =>
             {
-                btn_clear.Enabled = tbx_urls.Enabled = cbx_device.Enabled = true;
+                btn_export.Enabled = btn_clear.Enabled = tbx_urls.Enabled = cbx_device.Enabled = true;
                 btn_select.Text = "查询";
             });
 
-            btn_clear.Enabled = tbx_urls.Enabled = cbx_device.Enabled = false;
+            btn_export.Enabled = btn_clear.Enabled = tbx_urls.Enabled = cbx_device.Enabled = false;
             btn_select.Text = "取消";
 
             Task.Run(() =>
@@ -80,7 +82,7 @@ namespace Client.Control
                         if (pages != null)
                         {
                             var pageurls = pages.Select(m => m.GetAttributeValue("href", ""));
-                            pageurls.Where(m => m.Contains("http")).AsParallel().ForAll(m =>
+                            pageurls.Where(m => m.Contains("http")).ToList().ForEach(m =>
                             {
                                 var request2 = new RestSharp.RestRequest();
                                 request2.Resource = m.Replace("https://baidurank.aizhan.com/", "");
@@ -89,7 +91,7 @@ namespace Client.Control
                                 {
                                     var htmldoc2 = new HtmlAgilityPack.HtmlDocument();
                                     htmldoc2.LoadHtml(resp2.Content);
-                                    var nodes2 = htmldoc.DocumentNode.SelectNodes("//div[@class='baidurank-list']/table//tr/td[@class='title']/a/../..");
+                                    var nodes2 = htmldoc2.DocumentNode.SelectNodes("//div[@class='baidurank-list']/table//tr/td[@class='title']/a/../..");
                                     NewMethod(url, nodes2);
                                 }
                             });
@@ -104,8 +106,9 @@ namespace Client.Control
                 }
                 cbx_device.Invoke(new MethodInvoker(() =>
                 {
-                    btn_clear.Enabled = tbx_urls.Enabled = cbx_device.Enabled = true;
+                    btn_export.Enabled = btn_clear.Enabled = tbx_urls.Enabled = cbx_device.Enabled = true;
                     btn_select.Text = "查询";
+                    label3.Text = "查询完成\r\n共有数量：" + lv_result.Items.Count;
                 }));
 
             }, cancellationToken.Token);
@@ -124,7 +127,7 @@ namespace Client.Control
                 {
                     lv_result.Invoke(new MethodInvoker(() =>
                     {
-                        lv_result.Items.Add(new ListViewItem(new string[] { lv_result.Items.Count.ToString(), url, word.InnerText.Trim(), cbx_device.Text, rank.InnerText.Replace("第", "").Trim() }));
+                        lv_result.Items.Add(new ListViewItem(new string[] { lv_result.Items.Count.ToString(), url, word.InnerText.Trim(), cbx_device.Text, rank.InnerText.Replace("\t", "").Replace("\n", "").Trim() }));
                     }));
                 }
             }
@@ -133,6 +136,39 @@ namespace Client.Control
         private void btn_clear_Click(object sender, EventArgs e)
         {
             lv_result.Items.Clear();
+        }
+
+        private void btn_export_Click(object sender, EventArgs e)
+        {
+            if (lv_result.Items.Count > 0)
+            {
+                try
+                {
+                    SaveFileDialog saveFile = new SaveFileDialog();
+                    saveFile.Filter = "文本文件(*.txt)|*.txt";
+                    saveFile.FileName = "rank-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + ".txt";
+                    saveFile.Title = "导出文件";
+                    saveFile.CheckPathExists = true;
+                    saveFile.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+                    if (saveFile.ShowDialog() == DialogResult.OK)
+                    {
+                        StringBuilder stringBuilder = new StringBuilder();
+                        foreach (ListViewItem item in lv_result.Items)
+                        {
+                            if (item.SubItems.Count > 4)
+                            {
+                                stringBuilder.AppendLine($"{item.SubItems[1].Text}\t{item.SubItems[2].Text}\t{item.SubItems[3].Text}\t{item.SubItems[4].Text}");
+                            }
+                        }
+                        File.WriteAllText(saveFile.FileName, stringBuilder.ToString(), Encoding.UTF8);
+                        MessageBox.Show("导出成功", "提示");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "错误");
+                }
+            }
         }
     }
 }
