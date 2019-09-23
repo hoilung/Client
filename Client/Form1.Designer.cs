@@ -31,20 +31,20 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.linkControl1 = new Client.Control.LinkControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.rankControl1 = new Client.Control.RankControl();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.wordControl1 = new Client.Control.WordControl();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.linkControl1 = new Client.Control.LinkControl();
-            this.rankControl1 = new Client.Control.RankControl();
-            this.wordControl1 = new Client.Control.WordControl();
             this.tabControl1.SuspendLayout();
             this.tabPage4.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.groupBox3.SuspendLayout();
-            this.tabPage2.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -70,6 +70,14 @@
             this.tabPage4.Text = "外链工具";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
+            // linkControl1
+            // 
+            this.linkControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.linkControl1.Location = new System.Drawing.Point(3, 3);
+            this.linkControl1.Name = "linkControl1";
+            this.linkControl1.Size = new System.Drawing.Size(764, 498);
+            this.linkControl1.TabIndex = 0;
+            // 
             // tabPage1
             // 
             this.tabPage1.Controls.Add(this.rankControl1);
@@ -80,6 +88,33 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "排名工具";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // rankControl1
+            // 
+            this.rankControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rankControl1.Location = new System.Drawing.Point(3, 3);
+            this.rankControl1.Name = "rankControl1";
+            this.rankControl1.Size = new System.Drawing.Size(764, 498);
+            this.rankControl1.TabIndex = 0;
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.wordControl1);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(770, 504);
+            this.tabPage2.TabIndex = 4;
+            this.tabPage2.Text = "挖词工具";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // wordControl1
+            // 
+            this.wordControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.wordControl1.Location = new System.Drawing.Point(3, 3);
+            this.wordControl1.Name = "wordControl1";
+            this.wordControl1.Size = new System.Drawing.Size(764, 498);
+            this.wordControl1.TabIndex = 0;
             // 
             // tabPage3
             // 
@@ -107,44 +142,9 @@
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(30, 43);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(353, 204);
+            this.label5.Size = new System.Drawing.Size(353, 228);
             this.label5.TabIndex = 0;
             this.label5.Text = resources.GetString("label5.Text");
-            // 
-            // tabPage2
-            // 
-            this.tabPage2.Controls.Add(this.wordControl1);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(770, 504);
-            this.tabPage2.TabIndex = 4;
-            this.tabPage2.Text = "挖词工具";
-            this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // linkControl1
-            // 
-            this.linkControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.linkControl1.Location = new System.Drawing.Point(3, 3);
-            this.linkControl1.Name = "linkControl1";
-            this.linkControl1.Size = new System.Drawing.Size(764, 498);
-            this.linkControl1.TabIndex = 0;
-            // 
-            // rankControl1
-            // 
-            this.rankControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rankControl1.Location = new System.Drawing.Point(3, 3);
-            this.rankControl1.Name = "rankControl1";
-            this.rankControl1.Size = new System.Drawing.Size(764, 498);
-            this.rankControl1.TabIndex = 0;
-            // 
-            // wordControl1
-            // 
-            this.wordControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.wordControl1.Location = new System.Drawing.Point(3, 3);
-            this.wordControl1.Name = "wordControl1";
-            this.wordControl1.Size = new System.Drawing.Size(764, 498);
-            this.wordControl1.TabIndex = 0;
             // 
             // Form1
             // 
@@ -161,10 +161,10 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage4.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
-            this.tabPage2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
