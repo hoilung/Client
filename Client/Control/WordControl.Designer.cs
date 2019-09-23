@@ -124,7 +124,8 @@
             this.cbx_device.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbx_device.FormattingEnabled = true;
             this.cbx_device.Items.AddRange(new object[] {
-            "pc"});
+            "pc",
+            "mobile"});
             this.cbx_device.Location = new System.Drawing.Point(475, 22);
             this.cbx_device.Name = "cbx_device";
             this.cbx_device.Size = new System.Drawing.Size(128, 20);

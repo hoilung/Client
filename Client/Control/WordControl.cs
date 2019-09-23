@@ -58,6 +58,7 @@ namespace Client.Control
             btn_export.Enabled = btn_clear.Enabled = tbx_urls.Enabled = cbx_device.Enabled = false;
             btn_select.Text = "取消";
 
+            var device = cbx_device.Text.ToLower();
             Task.Run(() =>
             {
                 var client = new RestSharp.RestClient("https://baidurank.aizhan.com");
@@ -67,7 +68,14 @@ namespace Client.Control
                 foreach (var url in urls)
                 {
                     var request = new RestSharp.RestRequest();
-                    request.Resource = $"baidu/{url}/";
+                    if (device == "pc")
+                    {
+                        request.Resource = $"baidu/{url}/";
+                    }
+                    else
+                    {
+                        request.Resource = $"mobile/{url}/";
+                    }
                     var resp = client.Get(request);
                     if (!resp.IsSuccessful)
                         resp = client.Get(request);
