@@ -318,8 +318,19 @@ namespace Client.Control
 
                             client.UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1";
 
+                            //var resp = client.Get(request);
                             request.Resource = $"s?ie=utf-8&wd={System.Web.HttpUtility.UrlEncode(item.Word)}";
                             var resp = client.Get(request);
+                            if (resp.StatusCode == System.Net.HttpStatusCode.Found)
+                            {
+
+                                var l = resp.Headers.FirstOrDefault(f => f.Name == "Location");
+                                if (l != null)
+                                {
+                                    request.Resource = l.Value.ToString();
+                                    resp = client.Get(request);
+                                }
+                            }
                             if (resp.IsSuccessful)
                             {
                                 status = resp.StatusCode.ToString();
