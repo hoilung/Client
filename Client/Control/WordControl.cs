@@ -42,7 +42,7 @@ namespace Client.Control
             progressBar1.Maximum = urls.Length;
 
 
-            if (cancellationToken != null && cancellationToken.IsCancellationRequested)
+            if (cancellationToken != null && !cancellationToken.IsCancellationRequested)
             {
                 cancellationToken.Cancel();
                 return;
@@ -67,6 +67,8 @@ namespace Client.Control
 
                 foreach (var url in urls)
                 {
+                    if (cancellationToken.IsCancellationRequested)
+                        break;
                     var request = new RestSharp.RestRequest();
                     if (device == "pc")
                     {
@@ -154,7 +156,7 @@ namespace Client.Control
                 {
                     SaveFileDialog saveFile = new SaveFileDialog();
                     saveFile.Filter = "文本文件(*.txt)|*.txt";
-                    saveFile.FileName = "rank-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + ".txt";
+                    saveFile.FileName = "word-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + ".txt";
                     saveFile.Title = "导出文件";
                     saveFile.CheckPathExists = true;
                     saveFile.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);

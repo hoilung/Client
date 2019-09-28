@@ -11,6 +11,7 @@ using RestSharp;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Collections;
+using System.Threading;
 
 namespace Client.Control
 {
@@ -177,15 +178,25 @@ namespace Client.Control
 
         }
 
+        private CancellationTokenSource cancellationToken = null;
+
         private void btn_check_Click(object sender, EventArgs e)
         {
 
-
+            if (cancellationToken != null && !cancellationToken.IsCancellationRequested)
+            {
+                cancellationToken.Cancel();
+                return;
+            }
+            cancellationToken = new CancellationTokenSource();
+            cancellationToken.Token.Register(() =>
+            {
+                label7.Text = "取消查询 ";
+                btn_check.Text = "查询";
+            });
 
             label7.Text = string.Empty;
-
             var lines = tbx_word.Lines;
-
             var words = new List<Models.SearchResult>();
             foreach (var item in lines)
             {
@@ -209,7 +220,6 @@ namespace Client.Control
             {
                 return;
             }
-
             words = words.OrderByDescending(m => m.Host).ToList();
             progressBar1.Maximum = words.Count;
             progressBar1.Value = 0;
@@ -220,7 +230,7 @@ namespace Client.Control
             progressBar2.Step = 1;
 
             var maxpage = comboBox1.SelectedIndex;
-            btn_check.Enabled = false;
+            btn_check.Text = "取消查询";
             tbx_result.Clear();
             Task.Run(() =>
             {
@@ -231,6 +241,8 @@ namespace Client.Control
 
                     try
                     {
+                        if (cancellationToken.IsCancellationRequested)
+                            return;
                         var client = new RestClient("http://www.baidu.com");
                         client.CookieContainer = new System.Net.CookieContainer();
                         client.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36";
@@ -392,23 +404,25 @@ namespace Client.Control
                     }
 
                 });
-
+                if (cancellationToken.IsCancellationRequested)
+                    return;
 
                 var client2 = new RestClient("http://www.baidu.com");
                 client2.CookieContainer = new System.Net.CookieContainer();
                 client2.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36";
                 client2.FollowRedirects = false;
-                int index = 0;
-                words.AsParallel().ForAll(item =>
-                {
+                int index = 0;                
+                words.ForEach(item =>
+                {                   
                     if (item.SearchNodes != null)
                     {
                         if (item.Device == "pc")
                         {
                             item.SearchNodes.AsParallel().ForAll(m =>
                             {
-                                //return Task.Run(() =>
-                                //{
+                                if (cancellationToken.IsCancellationRequested)
+                                    return;
+
                                 var request2 = new RestRequest();
                                 request2.Resource = m.LinkUrl.Replace("http://www.baidu.com/", "");
                                 var resp2 = client2.Head(request2);
@@ -420,7 +434,7 @@ namespace Client.Control
                                         m.Url = new Uri(l.Value.ToString());
                                     }
                                 }
-                                // });
+
                             });
 
                             // Task.WaitAll(tasks.ToArray());
@@ -434,7 +448,7 @@ namespace Client.Control
                     {
                         progressBar2.PerformStep();
                     }));
-                    tbx_result.BeginInvoke(new MethodInvoker(() =>
+                    tbx_result.Invoke(new MethodInvoker(() =>
                     {
                         tbx_result.AppendText(item.ToString() + "\r\n");
                         var lvi = new ListViewItem(listView1.Items.Count.ToString());
@@ -466,14 +480,67 @@ namespace Client.Control
                 btn_check.BeginInvoke(new MethodInvoker(() =>
                 {
                     label7.Text = "查询完成：首页数量 " + index;
-                    btn_check.Enabled = true;
+                    btn_check.Text = "查询";
                 }));
 
 
-            });
+            }, cancellationToken.Token);
 
 
 
+        }
+
+        private void ToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFile = new SaveFileDialog();
+            saveFile.Filter = "文本文件(*.txt)|*.txt";
+            saveFile.FileName = "rank-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + ".txt";
+            saveFile.Title = "导出文件";
+            saveFile.CheckPathExists = true;
+            saveFile.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+            if (saveFile.ShowDialog() == DialogResult.OK)
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+                foreach (ListViewItem item in listView1.Items)
+                {
+                    if (item.SubItems.Count > 4)
+                    {
+                        stringBuilder.AppendLine($"{item.SubItems[1].Text}\t{item.SubItems[2].Text}\t{item.SubItems[3].Text}\t{item.SubItems[4].Text}");
+                    }
+                }
+                File.WriteAllText(saveFile.FileName, stringBuilder.ToString(), Encoding.UTF8);
+                MessageBox.Show("导出成功", "提示");
+            }
+        }
+
+        private void ToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count < 1)
+            {
+                MessageBox.Show("当前没有选中内容", "提示");
+                return;
+            }
+
+            //复制选中
+            SaveFileDialog saveFile = new SaveFileDialog();
+            saveFile.Filter = "文本文件(*.txt)|*.txt";
+            saveFile.FileName = "rank-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + ".txt";
+            saveFile.Title = "导出文件";
+            saveFile.CheckPathExists = true;
+            saveFile.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+            if (saveFile.ShowDialog() == DialogResult.OK)
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+                foreach (ListViewItem item in listView1.SelectedItems)
+                {
+                    if (item.SubItems.Count > 4)
+                    {
+                        stringBuilder.AppendLine($"{item.SubItems[1].Text}\t{item.SubItems[2].Text}\t{item.SubItems[3].Text}\t{item.SubItems[4].Text}");
+                    }
+                }
+                File.WriteAllText(saveFile.FileName, stringBuilder.ToString(), Encoding.UTF8);
+                MessageBox.Show("导出成功", "提示");
+            }
         }
     }
 }

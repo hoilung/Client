@@ -251,19 +251,21 @@
             this.ToolStripMenuItem1,
             this.ToolStripMenuItem2});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(125, 48);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 70);
             // 
             // ToolStripMenuItem1
             // 
             this.ToolStripMenuItem1.Name = "ToolStripMenuItem1";
-            this.ToolStripMenuItem1.Size = new System.Drawing.Size(124, 22);
-            this.ToolStripMenuItem1.Text = "复制选中";
+            this.ToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.ToolStripMenuItem1.Text = "导出选中";
+            this.ToolStripMenuItem1.Click += new System.EventHandler(this.ToolStripMenuItem1_Click);
             // 
             // ToolStripMenuItem2
             // 
             this.ToolStripMenuItem2.Name = "ToolStripMenuItem2";
-            this.ToolStripMenuItem2.Size = new System.Drawing.Size(124, 22);
-            this.ToolStripMenuItem2.Text = "复制全部";
+            this.ToolStripMenuItem2.Size = new System.Drawing.Size(180, 22);
+            this.ToolStripMenuItem2.Text = "导出全部";
+            this.ToolStripMenuItem2.Click += new System.EventHandler(this.ToolStripMenuItem2_Click);
             // 
             // RankControl
             // 
