@@ -418,25 +418,32 @@ namespace Client.Control
                     {
                         if (item.Device == "pc")
                         {
-                            item.SearchNodes.AsParallel().ForAll(m =>
+                            try
                             {
-                                if (cancellationToken.IsCancellationRequested)
-                                    return;
-
-                                var request2 = new RestRequest();
-                                request2.Resource = m.LinkUrl.Replace("http://www.baidu.com/", "");
-                                var resp2 = client2.Head(request2);
-                                if (resp2.StatusCode == System.Net.HttpStatusCode.Found)
+                                item.SearchNodes.AsParallel().ForAll(m =>
                                 {
-                                    var l = resp2.Headers.FirstOrDefault(f => f.Name == "Location");
-                                    if (l != null)
+                                    if (cancellationToken.IsCancellationRequested)
+                                        return;
+
+                                    var request2 = new RestRequest();
+                                    request2.Resource = m.LinkUrl.Replace("http://www.baidu.com/", "");
+                                    var resp2 = client2.Head(request2);
+                                    if (resp2.StatusCode == System.Net.HttpStatusCode.Found)
                                     {
-                                        m.Url = new Uri(l.Value.ToString());
+                                        var l = resp2.Headers.FirstOrDefault(f => f.Name == "Location");
+                                        if (l != null && l.Value.ToString().StartsWith("http"))
+                                        {
+                                            m.Url = new Uri(l.Value.ToString());
+                                        }
                                     }
-                                }
 
-                            });
+                                });
 
+                            }
+                            catch (Exception ex)
+                            {
+                                
+                            }
                             // Task.WaitAll(tasks.ToArray());
                         }
                         else
