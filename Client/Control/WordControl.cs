@@ -21,11 +21,13 @@ namespace Client.Control
             InitializeComponent();
             tabControl1.Dock = DockStyle.Fill;
             cbx_device.SelectedIndex = 0;
+            cb_source.SelectedIndex = 0;
             tbx_urls.TextChanged += (s, e) =>
             {
                 label2.Text = "列表行数:" + tbx_urls.Lines.Length;
             };
 
+            tabControl1.TabPages.Remove(tabPage2);
         }
 
         private CancellationTokenSource cancellationToken = null;
@@ -51,78 +53,176 @@ namespace Client.Control
             cancellationToken = new CancellationTokenSource();
             cancellationToken.Token.Register(() =>
             {
-                btn_export.Enabled = btn_clear.Enabled = tbx_urls.Enabled = cbx_device.Enabled = true;
+                btn_export.Enabled = btn_clear.Enabled = tbx_urls.Enabled = cbx_device.Enabled = cb_source.Enabled = true;
                 btn_select.Text = "查询";
             });
 
-            btn_export.Enabled = btn_clear.Enabled = tbx_urls.Enabled = cbx_device.Enabled = false;
+            btn_export.Enabled = btn_clear.Enabled = tbx_urls.Enabled = cbx_device.Enabled = cb_source.Enabled = false;
             btn_select.Text = "取消";
 
             var device = cbx_device.Text.ToLower();
+            int source = cb_source.SelectedIndex;
             Task.Run(() =>
             {
-                var client = new RestSharp.RestClient("https://baidurank.aizhan.com");
-                client.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36";
-                client.CookieContainer = new System.Net.CookieContainer();
-
-                foreach (var url in urls)
+                if (source == 0)
                 {
-                    if (cancellationToken.IsCancellationRequested)
-                        break;
-                    var request = new RestSharp.RestRequest();
-                    if (device == "pc")
-                    {
-                        request.Resource = $"baidu/{url}/";
-                    }
-                    else
-                    {
-                        request.Resource = $"mobile/{url}/";
-                    }
-                    var resp = client.Get(request);
-                    if (!resp.IsSuccessful)
-                        resp = client.Get(request);
-                    if (resp.IsSuccessful)
-                    {
-                        var htmldoc = new HtmlAgilityPack.HtmlDocument();
-                        htmldoc.LoadHtml(resp.Content);
-                        var nodes = htmldoc.DocumentNode.SelectNodes("//div[@class='baidurank-list']/table//tr/td[@class='title']/a/../..");
-                        NewMethod(url, nodes);
+                    var client = new RestSharp.RestClient("https://baidurank.aizhan.com");
+                    client.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36";
+                    client.CookieContainer = new System.Net.CookieContainer();
 
-                        var pages = htmldoc.DocumentNode.SelectNodes("//div[@class='baidurank-pager']/ul/a[@rel='nofollow']");
-                        if (pages != null)
+                    foreach (var url in urls)
+                    {
+                        if (cancellationToken.IsCancellationRequested)
+                            break;
+                        var request = new RestSharp.RestRequest();
+                        if (device == "pc")
                         {
-                            var pageurls = pages.Select(m => m.GetAttributeValue("href", ""));
-                            pageurls.Where(m => m.Contains("http")).ToList().ForEach(m =>
+                            request.Resource = $"baidu/{url}/";
+                        }
+                        else
+                        {
+                            request.Resource = $"mobile/{url}/";
+                        }
+                        var resp = client.Get(request);
+                        if (!resp.IsSuccessful)
+                            resp = client.Get(request);
+                        if (resp.IsSuccessful)
+                        {
+                            var htmldoc = new HtmlAgilityPack.HtmlDocument();
+                            htmldoc.LoadHtml(resp.Content);
+                            var nodes = htmldoc.DocumentNode.SelectNodes("//div[@class='baidurank-list']/table//tr/td[@class='title']/a/../..");
+                            NewMethod(url, nodes);
+
+                            var pages = htmldoc.DocumentNode.SelectNodes("//div[@class='baidurank-pager']/ul/a[@rel='nofollow']");
+                            if (pages != null)
                             {
-                                var request2 = new RestSharp.RestRequest();
-                                request2.Resource = m.Replace("https://baidurank.aizhan.com/", "");
-                                var resp2 = client.Get(request2);
-                                if (resp2.IsSuccessful)
+                                var pageurls = pages.Select(m => m.GetAttributeValue("href", ""));
+                                pageurls.Where(m => m.Contains("http")).ToList().ForEach(m =>
                                 {
-                                    var htmldoc2 = new HtmlAgilityPack.HtmlDocument();
-                                    htmldoc2.LoadHtml(resp2.Content);
-                                    var nodes2 = htmldoc2.DocumentNode.SelectNodes("//div[@class='baidurank-list']/table//tr/td[@class='title']/a/../..");
-                                    NewMethod(url, nodes2);
+                                    var request2 = new RestSharp.RestRequest();
+                                    request2.Resource = m.Replace("https://baidurank.aizhan.com/", "");
+                                    var resp2 = client.Get(request2);
+                                    if (resp2.IsSuccessful)
+                                    {
+                                        var htmldoc2 = new HtmlAgilityPack.HtmlDocument();
+                                        htmldoc2.LoadHtml(resp2.Content);
+                                        var nodes2 = htmldoc2.DocumentNode.SelectNodes("//div[@class='baidurank-list']/table//tr/td[@class='title']/a/../..");
+                                        NewMethod(url, nodes2);
+                                    }
+                                });
+
+                            }
+                        }
+                        progressBar1.Invoke(new MethodInvoker(() =>
+                        {
+                            progressBar1.PerformStep();
+                        }));
+
+                    }
+                    cbx_device.Invoke(new MethodInvoker(() =>
+                    {
+                        btn_export.Enabled = btn_clear.Enabled = tbx_urls.Enabled = cbx_device.Enabled = cb_source.Enabled = true;
+                        btn_select.Text = "查询";
+                        label3.Text = "查询完成\r\n共有数量：" + lv_result.Items.Count;
+                    }));
+                }
+                else if (source == 1)
+                {
+                    var client = new RestSharp.RestClient("http://rank.chinaz.com");
+                    client.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36";
+                    client.CookieContainer = new System.Net.CookieContainer();
+                    foreach (var url in urls)
+                    {
+                        if (cancellationToken.IsCancellationRequested)
+                            break;
+                        var request = new RestSharp.RestRequest();
+                        if (device == "pc")
+                        {
+                            request.Resource = $"{url}";
+                        }
+                        else
+                        {
+                            request.Resource = $"baidumobile/{url}/";
+                        }
+                        var resp = client.Get(request);
+                        if (!resp.IsSuccessful)
+                            resp = client.Get(request);
+                        if (resp.IsSuccessful)
+                        {
+                            var htmldoc = new HtmlAgilityPack.HtmlDocument();
+                            htmldoc.LoadHtml(resp.Content);
+                            var nodes = htmldoc.DocumentNode.SelectNodes("//li[@class='ReListCent ReLists clearfix' or @class='ReListCent ReLists  clearfix']");
+
+                            NewMethod1(device, url, nodes);
+
+
+                            var value = htmldoc.DocumentNode.SelectSingleNode("//i[@class='col-blue02']");
+                            if (value != null && Regex.IsMatch(value.InnerText, @"\d+"))
+                            {
+                                var count = (int.Parse(value.InnerText) / 20) + 1;
+                                if (count > 10)
+                                    count = 10;
+                                for (int i = 2; i <= count; i++)
+                                {
+                                    if (device == "pc")
+                                    {
+                                        request.Resource = $"{url}-0--0-{i}";
+                                    }
+                                    else
+                                    {
+                                        request.Resource = $"baidumobile/{url}-0--0-{i}";
+                                    }
+                                    var resp2 = client.Get(request);
+                                    if (resp2.IsSuccessful)
+                                    {
+                                        var htmldoc2 = new HtmlAgilityPack.HtmlDocument();
+                                        htmldoc2.LoadHtml(resp2.Content);
+                                        var nodes2 = htmldoc2.DocumentNode.SelectNodes("//li[@class='ReListCent ReLists clearfix' or @class='ReListCent ReLists  clearfix']");
+
+                                        NewMethod1(device, url, nodes2);
+                                    }
                                 }
-                            });
+                            }
 
                         }
-                    }
-                    progressBar1.Invoke(new MethodInvoker(() =>
+
+
+                        progressBar1.Invoke(new MethodInvoker(() =>
                     {
                         progressBar1.PerformStep();
                     }));
 
-                }
-                cbx_device.Invoke(new MethodInvoker(() =>
-                {
-                    btn_export.Enabled = btn_clear.Enabled = tbx_urls.Enabled = cbx_device.Enabled = true;
-                    btn_select.Text = "查询";
-                    label3.Text = "查询完成\r\n共有数量：" + lv_result.Items.Count;
-                }));
+                    }
 
+
+                    cbx_device.Invoke(new MethodInvoker(() =>
+                    {
+                        btn_export.Enabled = btn_clear.Enabled = tbx_urls.Enabled = cbx_device.Enabled = cb_source.Enabled = true;
+                        btn_select.Text = "查询";
+                        label3.Text = "查询完成\r\n共有数量：" + lv_result.Items.Count;
+                    }));
+
+                }
             }, cancellationToken.Token);
 
+        }
+
+        private void NewMethod1(string device, string url, HtmlAgilityPack.HtmlNodeCollection nodes)
+        {
+            if (nodes == null)
+                return;
+            foreach (var li in nodes)
+            {
+                var word = li.SelectSingleNode(li.XPath + (device == "pc" ? "/div[@class='w25-0 tl pl10 pr pbimg showt']/a" : "/div[@class='w28-0 tl pl10 pr pbimg']/div/a"));
+                var rank = li.SelectSingleNode(li.XPath + (device == "pc" ? "/div[@class='w8-0  tl']/a" : "/div[@class='w12-0  tl']/a"));
+                if (word != null && rank != null)
+                {
+                    lv_result.Invoke(new MethodInvoker(() =>
+                    {
+                        lv_result.Items.Add(new ListViewItem(new string[] { lv_result.Items.Count.ToString(), url, word.InnerText.Trim(), cbx_device.Text, rank.InnerText.Replace("\t", "").Replace("\n", "").Trim() }));
+                    }));
+                }
+            }
         }
 
         private void NewMethod(string url, HtmlAgilityPack.HtmlNodeCollection nodes)

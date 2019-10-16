@@ -48,6 +48,7 @@
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.cb_source = new System.Windows.Forms.ComboBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -67,6 +68,7 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.label3);
             this.tabPage1.Controls.Add(this.progressBar1);
             this.tabPage1.Controls.Add(this.groupBox2);
             this.tabPage1.Controls.Add(this.groupBox1);
@@ -88,7 +90,7 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.label3);
+            this.groupBox2.Controls.Add(this.cb_source);
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.cbx_device);
             this.groupBox2.Controls.Add(this.label1);
@@ -104,7 +106,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(475, 80);
+            this.label3.Location = new System.Drawing.Point(615, 149);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(41, 12);
             this.label3.TabIndex = 3;
@@ -113,7 +115,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(475, 56);
+            this.label2.Location = new System.Drawing.Point(475, 95);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(53, 12);
             this.label2.TabIndex = 4;
@@ -126,9 +128,9 @@
             this.cbx_device.Items.AddRange(new object[] {
             "pc",
             "mobile"});
-            this.cbx_device.Location = new System.Drawing.Point(475, 22);
+            this.cbx_device.Location = new System.Drawing.Point(475, 49);
             this.cbx_device.Name = "cbx_device";
-            this.cbx_device.Size = new System.Drawing.Size(128, 20);
+            this.cbx_device.Size = new System.Drawing.Size(121, 20);
             this.cbx_device.TabIndex = 3;
             // 
             // label1
@@ -245,6 +247,18 @@
             this.tabPage2.Text = "相关词挖掘";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // cb_source
+            // 
+            this.cb_source.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cb_source.FormattingEnabled = true;
+            this.cb_source.Items.AddRange(new object[] {
+            "爱站",
+            "站长站"});
+            this.cb_source.Location = new System.Drawing.Point(475, 20);
+            this.cb_source.Name = "cb_source";
+            this.cb_source.Size = new System.Drawing.Size(121, 20);
+            this.cb_source.TabIndex = 5;
+            // 
             // WordControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -254,6 +268,7 @@
             this.Size = new System.Drawing.Size(761, 505);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -283,5 +298,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button btn_export;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.ComboBox cb_source;
     }
 }
