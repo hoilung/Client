@@ -77,12 +77,21 @@ namespace Client.Control
                 {
                     var lines = File.ReadAllLines(filename);
                     listView1.Items.Clear();
+                    int index = 0;
                     for (int i = 0; i < lines.Length; i++)
                     {
                         var item = lines[i];
                         var sp = item.Split(new[] { '\t', ' ' });
                         if (sp.Length > 3)
                         {
+                            if (Regex.IsMatch(sp[3], @"^[\d]+$"))
+                            {
+                                var rank = int.Parse(sp[3]);
+                                if (rank < 11)
+                                {
+                                    index += 1;
+                                }
+                            }
 
                             var lvi = new ListViewItem(listView1.Items.Count.ToString());
                             lvi.SubItems.Add(sp[0]);
@@ -91,11 +100,12 @@ namespace Client.Control
                             lvi.SubItems.Add(sp[3]);
                             lvi.UseItemStyleForSubItems = false;
                             listView1.Items.Add(lvi);
-                            listView1.EndUpdate();
                         }
                     }
+                    listView1.EndUpdate();
+                    label5.Text = "总计：" + listView1.Items.Count + " 首页：" + index;
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     MessageBox.Show("提示", "读取文件错误");
                 }
@@ -393,7 +403,7 @@ namespace Client.Control
 
                             //  toolTip1.Show(status, label7);
 
-                            label7.Text = item.Word;
+                            label7.Text ="查询预热："+ item.Word;
                             progressBar1.PerformStep();
                         }));
                         //  });
@@ -411,9 +421,14 @@ namespace Client.Control
                 client2.CookieContainer = new System.Net.CookieContainer();
                 client2.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36";
                 client2.FollowRedirects = false;
-                int index = 0;                
+                int index = 0;
                 words.ForEach(item =>
-                {                   
+                {
+                    progressBar2.BeginInvoke(new MethodInvoker(() =>
+                    {
+                        label7.Text ="查询进度："+ item.Word.ToString();
+                        progressBar2.PerformStep();
+                    }));
                     if (item.SearchNodes != null)
                     {
                         if (item.Device == "pc")
@@ -442,19 +457,36 @@ namespace Client.Control
                             }
                             catch (Exception ex)
                             {
-                                
+
                             }
                             // Task.WaitAll(tasks.ToArray());
                         }
                         else
                         {
-                            item.SearchNodes.ForEach(m => m.Url = new Uri(m.LinkUrl));
+                            item.SearchNodes.ForEach(m =>
+                            {
+                                try
+                                {
+                                    if (m.LinkUrl.StartsWith("about:blank"))
+                                        m.Url = new Uri("about:blank");
+                                    else
+                                        m.Url = new Uri(m.LinkUrl.StartsWith("http") ? m.LinkUrl : "http://" + m.LinkUrl);
+                                }
+                                catch (Exception ex)
+                                {
+
+                                }
+                            });
                         }
                     }
-                    progressBar2.BeginInvoke(new MethodInvoker(() =>
+                    if (!item.Rank.Contains("+") && item.Rank.Length < 2)
                     {
-                        progressBar2.PerformStep();
-                    }));
+                        var rank = int.Parse(item.Rank);
+                        if (rank > 0 && rank < 11)
+                        {
+                            index += 1;
+                        }
+                    }
                     tbx_result.Invoke(new MethodInvoker(() =>
                     {
                         tbx_result.AppendText(item.ToString() + "\r\n");
@@ -464,18 +496,10 @@ namespace Client.Control
                         lvi.SubItems.Add(item.Device);
                         lvi.SubItems.Add(item.Rank);
                         lvi.UseItemStyleForSubItems = false;
-                        listView1.Items.Add(lvi);
-
+                        listView1.Items.Add(lvi);                        
 
                     }));
-                    if (!item.Rank.Contains("+") && item.Rank.Length < 2)
-                    {
-                        var rank = int.Parse(item.Rank);
-                        if (rank > 0 && rank < 11)
-                        {
-                            index += 1;
-                        }
-                    }
+
                 });
                 listView1.EndUpdate();
                 var file = File.AppendText($"wd-{DateTime.Now.ToString("yyyyMMdd")}.txt");

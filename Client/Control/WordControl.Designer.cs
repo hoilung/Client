@@ -30,9 +30,10 @@
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.label3 = new System.Windows.Forms.Label();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label3 = new System.Windows.Forms.Label();
+            this.cb_source = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.cbx_device = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -48,7 +49,6 @@
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.cb_source = new System.Windows.Forms.ComboBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -80,6 +80,15 @@
             this.tabPage1.Text = "网站查词";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(615, 149);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(41, 12);
+            this.label3.TabIndex = 3;
+            this.label3.Text = "待查询";
+            // 
             // progressBar1
             // 
             this.progressBar1.Location = new System.Drawing.Point(9, 149);
@@ -103,19 +112,22 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "查询网址";
             // 
-            // label3
+            // cb_source
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(615, 149);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(41, 12);
-            this.label3.TabIndex = 3;
-            this.label3.Text = "待查询";
+            this.cb_source.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cb_source.FormattingEnabled = true;
+            this.cb_source.Items.AddRange(new object[] {
+            "爱站",
+            "站长站"});
+            this.cb_source.Location = new System.Drawing.Point(475, 20);
+            this.cb_source.Name = "cb_source";
+            this.cb_source.Size = new System.Drawing.Size(121, 20);
+            this.cb_source.TabIndex = 5;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(475, 95);
+            this.label2.Location = new System.Drawing.Point(475, 85);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(53, 12);
             this.label2.TabIndex = 4;
@@ -246,18 +258,6 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "相关词挖掘";
             this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // cb_source
-            // 
-            this.cb_source.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cb_source.FormattingEnabled = true;
-            this.cb_source.Items.AddRange(new object[] {
-            "爱站",
-            "站长站"});
-            this.cb_source.Location = new System.Drawing.Point(475, 20);
-            this.cb_source.Name = "cb_source";
-            this.cb_source.Size = new System.Drawing.Size(121, 20);
-            this.cb_source.TabIndex = 5;
             // 
             // WordControl
             // 
