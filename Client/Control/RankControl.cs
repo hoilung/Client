@@ -46,6 +46,7 @@ namespace Client.Control
             {
                 label1.Text = tbx_word.Lines.Length.ToString();
             };
+            
 
             tbx_result.TextChanged += (s, e) =>
             {
@@ -213,14 +214,14 @@ namespace Client.Control
                 if (string.IsNullOrEmpty(item) || string.IsNullOrWhiteSpace(item))
                     continue;
 
-                var sp = item.Split(new[] { '\t', ' ' });
+                var sp = item.Split(new[] { '\t'});
                 if (sp.Length > 3)
                 {
                     words.Add(new Models.SearchResult()
                     {
                         SearchNodes = new List<Models.SearchNode>(),
-                        Host = sp[0],
-                        Word = sp[1],
+                        Host = sp[0].Trim(),
+                        Word = sp[1].Trim(),
                         Device = sp[2].ToLower()
 
                     });
@@ -512,6 +513,7 @@ namespace Client.Control
                 {
                     label7.Text = "查询完成：首页数量 " + index;
                     btn_check.Text = "查询";
+
                 }));
 
 

@@ -30,6 +30,8 @@
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
@@ -52,8 +54,6 @@
             this.lv_link = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.label9 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -93,6 +93,25 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "外链发布";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(6, 399);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(29, 12);
+            this.label10.TabIndex = 15;
+            this.label10.Text = "状态";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.ForeColor = System.Drawing.SystemColors.InfoText;
+            this.label9.Location = new System.Drawing.Point(68, 399);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(41, 12);
+            this.label9.TabIndex = 14;
+            this.label9.Text = "待执行";
             // 
             // label8
             // 
@@ -215,7 +234,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(752, 424);
+            this.tabPage2.Size = new System.Drawing.Size(792, 487);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "外链管理";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -271,6 +290,7 @@
             // tbx_outlink
             // 
             this.tbx_outlink.Location = new System.Drawing.Point(70, 14);
+            this.tbx_outlink.MaxLength = 0;
             this.tbx_outlink.Multiline = true;
             this.tbx_outlink.Name = "tbx_outlink";
             this.tbx_outlink.ScrollBars = System.Windows.Forms.ScrollBars.Both;
@@ -301,25 +321,6 @@
             // 
             this.columnHeader2.Text = "外链地址";
             this.columnHeader2.Width = 500;
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.ForeColor = System.Drawing.SystemColors.InfoText;
-            this.label9.Location = new System.Drawing.Point(68, 399);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(41, 12);
-            this.label9.TabIndex = 14;
-            this.label9.Text = "待执行";
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(6, 399);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(29, 12);
-            this.label10.TabIndex = 15;
-            this.label10.Text = "状态";
             // 
             // LinkControl
             // 

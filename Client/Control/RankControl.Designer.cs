@@ -45,12 +45,12 @@
             this.btn_check = new System.Windows.Forms.Button();
             this.tbx_word = new System.Windows.Forms.TextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.label5 = new System.Windows.Forms.Label();
             this.listView2 = new System.Windows.Forms.ListView();
             this.listView1 = new System.Windows.Forms.ListView();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.label5 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -151,8 +151,10 @@
             // tbx_result
             // 
             this.tbx_result.Location = new System.Drawing.Point(6, 20);
+            this.tbx_result.MaxLength = 0;
             this.tbx_result.Multiline = true;
             this.tbx_result.Name = "tbx_result";
+            this.tbx_result.ReadOnly = true;
             this.tbx_result.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.tbx_result.Size = new System.Drawing.Size(506, 172);
             this.tbx_result.TabIndex = 1;
@@ -208,6 +210,7 @@
             // tbx_word
             // 
             this.tbx_word.Location = new System.Drawing.Point(12, 20);
+            this.tbx_word.MaxLength = 0;
             this.tbx_word.Multiline = true;
             this.tbx_word.Name = "tbx_word";
             this.tbx_word.ScrollBars = System.Windows.Forms.ScrollBars.Both;
@@ -227,6 +230,15 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "排名记录";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 421);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(41, 12);
+            this.label5.TabIndex = 4;
+            this.label5.Text = "总计：";
             // 
             // listView2
             // 
@@ -268,15 +280,6 @@
             this.ToolStripMenuItem2.Size = new System.Drawing.Size(124, 22);
             this.ToolStripMenuItem2.Text = "导出全部";
             this.ToolStripMenuItem2.Click += new System.EventHandler(this.ToolStripMenuItem2_Click);
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 421);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(41, 12);
-            this.label5.TabIndex = 4;
-            this.label5.Text = "总计：";
             // 
             // RankControl
             // 
