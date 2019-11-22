@@ -46,7 +46,7 @@ namespace Client.Control
             {
                 label1.Text = tbx_word.Lines.Length.ToString();
             };
-            
+
 
             tbx_result.TextChanged += (s, e) =>
             {
@@ -214,7 +214,7 @@ namespace Client.Control
                 if (string.IsNullOrEmpty(item) || string.IsNullOrWhiteSpace(item))
                     continue;
 
-                var sp = item.Split(new[] { '\t'});
+                var sp = item.Split(new[] { '\t' });
                 if (sp.Length > 3)
                 {
                     words.Add(new Models.SearchResult()
@@ -247,14 +247,14 @@ namespace Client.Control
             {
 
 
-                words.AsParallel().ForAll(item =>
+                words.AsParallel().AsOrdered().ForAll(item =>
                 {
 
                     try
                     {
                         if (cancellationToken.IsCancellationRequested)
                             return;
-                        var client = new RestClient("http://www.baidu.com");
+                        var client = new RestClient("https://www.baidu.com");
                         client.CookieContainer = new System.Net.CookieContainer();
                         client.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36";
                         client.FollowRedirects = false;
@@ -266,10 +266,11 @@ namespace Client.Control
                         {
 
                             #region pc
-
+                            request.Resource = "/";
+                            var resp = client.Get(request);
 
                             request.Resource = $"s?ie=utf-8&wd={System.Web.HttpUtility.UrlEncode(item.Word)}";
-                            var resp = client.Get(request);
+                            resp = client.Get(request);
                             for (int i = 0; i < 2; i++)
                             {
                                 if (!resp.IsSuccessful)
@@ -341,9 +342,10 @@ namespace Client.Control
 
                             client.UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1";
 
-                            //var resp = client.Get(request);
-                            request.Resource = $"s?ie=utf-8&wd={System.Web.HttpUtility.UrlEncode(item.Word)}";
+                            request.Resource = "/";
                             var resp = client.Get(request);
+                            request.Resource = $"s?ie=utf-8&wd={System.Web.HttpUtility.UrlEncode(item.Word)}";
+                            resp = client.Get(request);
                             if (resp.StatusCode == System.Net.HttpStatusCode.Found)
                             {
 
@@ -404,7 +406,7 @@ namespace Client.Control
 
                             //  toolTip1.Show(status, label7);
 
-                            label7.Text ="查询预热："+ item.Word;
+                            label7.Text = "查询预热：" + item.Word;
                             progressBar1.PerformStep();
                         }));
                         //  });
@@ -427,7 +429,7 @@ namespace Client.Control
                 {
                     progressBar2.BeginInvoke(new MethodInvoker(() =>
                     {
-                        label7.Text ="查询进度："+ item.Word.ToString();
+                        label7.Text = "查询进度：" + item.Word.ToString();
                         progressBar2.PerformStep();
                     }));
                     if (item.SearchNodes != null)
@@ -497,7 +499,7 @@ namespace Client.Control
                         lvi.SubItems.Add(item.Device);
                         lvi.SubItems.Add(item.Rank);
                         lvi.UseItemStyleForSubItems = false;
-                        listView1.Items.Add(lvi);                        
+                        listView1.Items.Add(lvi);
 
                     }));
 
