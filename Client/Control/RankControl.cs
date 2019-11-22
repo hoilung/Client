@@ -245,9 +245,7 @@ namespace Client.Control
             tbx_result.Clear();
             Task.Run(() =>
             {
-
-
-                words.AsParallel().AsOrdered().ForAll(item =>
+                words.AsParallel().AsOrdered().WithDegreeOfParallelism(Environment.ProcessorCount - 1).ForAll(item =>
                 {
 
                     try
