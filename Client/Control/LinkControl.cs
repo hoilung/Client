@@ -126,7 +126,7 @@ namespace Client.Control
                     var client = new RestSharp.RestClient();
                     client.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36";
 
-                    urls.AsParallel().ForAll(u =>
+                    urls.AsParallel().AsOrdered().WithDegreeOfParallelism(Environment.ProcessorCount - 1).ForAll(u =>
                     {
 
                         if (cancellationTokenSource.IsCancellationRequested)
@@ -139,7 +139,7 @@ namespace Client.Control
                         }));
 
                         int a = 0;
-                        links.AsParallel().ForAll(m =>
+                        links.AsParallel().AsOrdered().WithDegreeOfParallelism(Environment.ProcessorCount - 1).ForAll(m =>
                         {
                             try
                             {
