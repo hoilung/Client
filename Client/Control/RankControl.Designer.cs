@@ -51,6 +51,8 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.cbx_qps = new System.Windows.Forms.ComboBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -162,6 +164,8 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label6);
+            this.groupBox1.Controls.Add(this.cbx_qps);
             this.groupBox1.Controls.Add(this.comboBox1);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.btn_check);
@@ -281,6 +285,26 @@
             this.ToolStripMenuItem2.Text = "导出全部";
             this.ToolStripMenuItem2.Click += new System.EventHandler(this.ToolStripMenuItem2_Click);
             // 
+            // cbx_qps
+            // 
+            this.cbx_qps.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbx_qps.FormattingEnabled = true;
+            this.cbx_qps.Items.AddRange(new object[] {
+            "1"});
+            this.cbx_qps.Location = new System.Drawing.Point(520, 60);
+            this.cbx_qps.Name = "cbx_qps";
+            this.cbx_qps.Size = new System.Drawing.Size(99, 20);
+            this.cbx_qps.TabIndex = 4;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(625, 63);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(77, 12);
+            this.label6.TabIndex = 5;
+            this.label6.Text = "最大并发查询";
+            // 
             // RankControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -326,5 +350,7 @@
         private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem2;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.ComboBox cbx_qps;
+        private System.Windows.Forms.Label label6;
     }
 }

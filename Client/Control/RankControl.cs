@@ -57,6 +57,19 @@ namespace Client.Control
 
             comboBox1.SelectedIndex = 0;
             InitHistory();
+
+            cbx_qps.SelectedIndex = 0;
+
+
+            for (int i = 1; i < Environment.ProcessorCount - 1; i++)
+            {
+                cbx_qps.Items.Add(i + 1);
+            }
+            if (cbx_qps.Items.Count > 2)
+            {
+                cbx_qps.SelectedIndex = cbx_qps.Items.Count - 1;
+            }
+
         }
 
         private void ListView1_MouseClick(object sender, MouseEventArgs e)
@@ -202,7 +215,7 @@ namespace Client.Control
             cancellationToken = new CancellationTokenSource();
             cancellationToken.Token.Register(() =>
             {
-                label7.Text = "取消查询 ";
+                label7.Text = "查询取消";
                 btn_check.Text = "查询";
             });
 
@@ -243,9 +256,10 @@ namespace Client.Control
             var maxpage = comboBox1.SelectedIndex;
             btn_check.Text = "取消查询";
             tbx_result.Clear();
+            var maxpara = cbx_qps.SelectedIndex + 1;
             Task.Run(() =>
             {
-                words.AsParallel().AsOrdered().WithDegreeOfParallelism(Environment.ProcessorCount - 1).ForAll(item =>
+                words.AsParallel().AsOrdered().WithDegreeOfParallelism(maxpara).ForAll(item =>
                 {
 
                     try
@@ -281,12 +295,18 @@ namespace Client.Control
                                     break;
                                 }
                             }
+                            progressBar1.Invoke(new MethodInvoker(() =>
+                            {
+                                //  toolTip1.Show(status, label7);
+                                label7.Text = "预热首页：" + item.Word;
+                                progressBar1.PerformStep();
+                            }));
                             if (resp.IsSuccessful)
                             {
                                 status = resp.StatusCode.ToString();
                                 htmldoc.LoadHtml(resp.Content);
                                 var nodes = htmldoc.DocumentNode.SelectNodes("//div[@id='content_left']/div/h3//a");
-                                var nextpage = htmldoc.DocumentNode.SelectSingleNode("//*[@id='page']/a[@class='n']");
+                                var nextpage = htmldoc.DocumentNode.SelectSingleNode("//*[@id='page']//a[@class='n']");
                                 if (nodes == null)
                                     return;
                                 nodes.ToList().ForEach(m =>
@@ -308,8 +328,15 @@ namespace Client.Control
                                         resp = client.Get(request);
                                         if (resp.IsSuccessful)
                                         {
+                                            progressBar1.Invoke(new MethodInvoker(() =>
+                                            {
+                                                //  toolTip1.Show(status, label7);
+                                                label7.Text = $"预热{i + 2}页：" + item.Word;
+                                                progressBar1.PerformStep();
+                                            }));
+
                                             htmldoc.LoadHtml(resp.Content);
-                                            nextpage = htmldoc.DocumentNode.SelectSingleNode("//*[@id='page']/a[@class='n'][2]");
+                                            nextpage = htmldoc.DocumentNode.SelectSingleNode("//*[@id='page']//a[@class='n'][2]");
                                             nodes = htmldoc.DocumentNode.SelectNodes("//div[@id='content_left']/div/h3//a");
                                             if (nodes != null)
                                             {
@@ -323,6 +350,10 @@ namespace Client.Control
                                                     });
                                                 });
                                             }
+                                        }
+                                        else
+                                        {
+
                                         }
 
                                         //  Console.WriteLine(Task.CurrentId + "-" + i);
@@ -401,10 +432,8 @@ namespace Client.Control
 
                         progressBar1.Invoke(new MethodInvoker(() =>
                         {
-
                             //  toolTip1.Show(status, label7);
-
-                            label7.Text = "查询预热：" + item.Word;
+                            label7.Text = "预热完成：" + item.Word;
                             progressBar1.PerformStep();
                         }));
                         //  });
@@ -436,24 +465,33 @@ namespace Client.Control
                         {
                             try
                             {
-                                item.SearchNodes.AsParallel().ForAll(m =>
-                                {
-                                    if (cancellationToken.IsCancellationRequested)
-                                        return;
+                                Parallel.ForEach(item.SearchNodes.AsParallel().AsOrdered().WithDegreeOfParallelism(Environment.ProcessorCount - 1), (m, loopstate) =>
+                                  {
+                                      if (cancellationToken.IsCancellationRequested)
+                                          loopstate.Stop();
 
-                                    var request2 = new RestRequest();
-                                    request2.Resource = m.LinkUrl.Replace("http://www.baidu.com/", "");
-                                    var resp2 = client2.Head(request2);
-                                    if (resp2.StatusCode == System.Net.HttpStatusCode.Found)
-                                    {
-                                        var l = resp2.Headers.FirstOrDefault(f => f.Name == "Location");
-                                        if (l != null && l.Value.ToString().StartsWith("http"))
-                                        {
-                                            m.Url = new Uri(l.Value.ToString());
-                                        }
-                                    }
+                                      var request2 = new RestRequest();
+                                      request2.Resource = m.LinkUrl.Replace("http://www.baidu.com/", "");
+                                      var resp2 = client2.Head(request2);
+                                      if (resp2.StatusCode == System.Net.HttpStatusCode.Found)
+                                      {
+                                          var l = resp2.Headers.FirstOrDefault(f => f.Name == "Location");
+                                          if (l != null && l.Value.ToString().StartsWith("http"))
+                                          {
+                                              m.Url = new Uri(l.Value.ToString());
+                                              if (m.Url.Host.StartsWith(item.Host.Replace("www.", "")))
+                                              {
+                                                  loopstate.Stop();
+                                              }
 
-                                });
+                                          }
+                                      }
+                                  });
+                                //item.SearchNodes.AsParallel().ForAll((m) =>
+                                //{
+
+
+                                //});
 
                             }
                             catch (Exception ex)
@@ -509,8 +547,12 @@ namespace Client.Control
                 file.Flush();
                 file.Close();
 
+
+
                 btn_check.BeginInvoke(new MethodInvoker(() =>
                 {
+                    cancellationToken.Cancel();
+
                     label7.Text = "查询完成：首页数量 " + index;
                     btn_check.Text = "查询";
 
