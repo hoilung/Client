@@ -126,11 +126,11 @@ namespace Client.Control
                     var client = new RestSharp.RestClient();
                     client.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36";
 
-                    urls.AsParallel().AsOrdered().WithDegreeOfParallelism(Environment.ProcessorCount - 1).ForAll(u =>
+                    Parallel.ForEach(urls.AsParallel().AsOrdered().WithDegreeOfParallelism(Environment.ProcessorCount - 1), (u, loopstae) =>
                     {
 
                         if (cancellationTokenSource.IsCancellationRequested)
-                            return;
+                            loopstae.Stop(); ;
                         progressBar2.Invoke(new MethodInvoker(() =>
                         {
                             progressBar1.Value = 0;
@@ -139,7 +139,8 @@ namespace Client.Control
                         }));
 
                         int a = 0;
-                        links.AsParallel().AsOrdered().WithDegreeOfParallelism(Environment.ProcessorCount - 1).ForAll(m =>
+
+                        Parallel.ForEach(links.AsParallel().AsOrdered().WithDegreeOfParallelism(Environment.ProcessorCount - 1), (m, s) =>
                         {
                             try
                             {
@@ -156,13 +157,13 @@ namespace Client.Control
                                 }
                                 a += 1;
                                 progressBar1.Invoke(new MethodInvoker(() =>
-                                    {
-                                        progressBar1.Value = a;
-                                        lb_current.Text = $"{a}/{progressBar1.Maximum}";
-                                        // toolTip1.ToolTipTitle = $"{u} {status}";
-                                        //toolTip1.Show(request.Resource, label8);
-                                        label9.Text = $"{u} {status}\r\n{request.Resource}";
-                                    }));
+                                {
+                                    progressBar1.Value = a;
+                                    lb_current.Text = $"{a}/{progressBar1.Maximum}";
+                                    // toolTip1.ToolTipTitle = $"{u} {status}";
+                                    //toolTip1.Show(request.Resource, label8);
+                                    label9.Text = $"{u} {status}\r\n{request.Resource}";
+                                }));
 
                             }
                             catch (Exception ex)
@@ -173,6 +174,7 @@ namespace Client.Control
                         Task.Delay(2000);
 
                     });
+
                     tbx_urls.Invoke(new MethodInvoker(() =>
                     {
                         tbx_urls.Enabled = true;

@@ -151,7 +151,7 @@ namespace Client.Control
                         {
                             var htmldoc = new HtmlAgilityPack.HtmlDocument();
                             htmldoc.LoadHtml(resp.Content);
-                            var nodes = htmldoc.DocumentNode.SelectNodes("//li[@class='ReListCent ReLists clearfix' or @class='ReListCent ReLists  clearfix']");
+                            var nodes = htmldoc.DocumentNode.SelectNodes("//li[contains(@class,'ReLists')]");
 
                             NewMethod1(device, url, nodes);
 
@@ -177,7 +177,7 @@ namespace Client.Control
                                     {
                                         var htmldoc2 = new HtmlAgilityPack.HtmlDocument();
                                         htmldoc2.LoadHtml(resp2.Content);
-                                        var nodes2 = htmldoc2.DocumentNode.SelectNodes("//li[@class='ReListCent ReLists clearfix' or @class='ReListCent ReLists  clearfix']");
+                                        var nodes2 = htmldoc2.DocumentNode.SelectNodes("//li[contains(@class,'ReLists')]");
 
                                         NewMethod1(device, url, nodes2);
                                     }
@@ -213,8 +213,8 @@ namespace Client.Control
                 return;
             foreach (var li in nodes)
             {
-                var word = li.SelectSingleNode(li.XPath + (device == "pc" ? "/div[@class='w25-0 tl pl10 pr pbimg showt']/a" : "/div[@class='w28-0 tl pl10 pr pbimg']/div/a"));
-                var rank = li.SelectSingleNode(li.XPath + (device == "pc" ? "/div[@class='w8-0  tl']/a" : "/div[@class='w12-0  tl']/a"));
+                var word = li.SelectSingleNode(li.XPath + (device == "pc" ? "/div[@class='w25-0 tl pl10 pr pbimg showt']/a" : "/div[@class='w20-0 tl pl10 pr pbimg']/div/a"));
+                var rank = li.SelectSingleNode(li.XPath + (device == "pc" ? "/div[@class='w8-0  tl' or @class='w7-0  ml20 tl']/a" : "/div[@class='w7-0  tl']/a"));
                 if (word != null && rank != null)
                 {
                     lv_result.Invoke(new MethodInvoker(() =>

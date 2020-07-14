@@ -259,13 +259,12 @@ namespace Client.Control
             var maxpara = cbx_qps.SelectedIndex + 1;
             Task.Run(() =>
             {
-                words.AsParallel().AsOrdered().WithDegreeOfParallelism(maxpara).ForAll(item =>
+                Parallel.ForEach(words.AsParallel().AsOrdered().WithDegreeOfParallelism(maxpara), (item, loopstate) =>
                 {
-
                     try
                     {
                         if (cancellationToken.IsCancellationRequested)
-                            return;
+                            loopstate.Stop();
                         var client = new RestClient("https://www.baidu.com");
                         client.CookieContainer = new System.Net.CookieContainer();
                         client.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36";
@@ -298,8 +297,7 @@ namespace Client.Control
                             progressBar1.Invoke(new MethodInvoker(() =>
                             {
                                 //  toolTip1.Show(status, label7);
-                                label7.Text = "预热首页：" + item.Word;
-                                progressBar1.PerformStep();
+                                label7.Text = "预热首页：" + item.Word;                             
                             }));
                             if (resp.IsSuccessful)
                             {
@@ -332,7 +330,7 @@ namespace Client.Control
                                             {
                                                 //  toolTip1.Show(status, label7);
                                                 label7.Text = $"预热{i + 2}页：" + item.Word;
-                                                progressBar1.PerformStep();
+                                               
                                             }));
 
                                             htmldoc.LoadHtml(resp.Content);
@@ -442,8 +440,8 @@ namespace Client.Control
                     {
                         Console.WriteLine(ex);
                     }
-
                 });
+               
                 if (cancellationToken.IsCancellationRequested)
                     return;
 
