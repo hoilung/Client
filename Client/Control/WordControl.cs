@@ -119,12 +119,7 @@ namespace Client.Control
                         }));
 
                     }
-                    cbx_device.Invoke(new MethodInvoker(() =>
-                    {
-                        btn_export.Enabled = btn_clear.Enabled = tbx_urls.Enabled = cbx_device.Enabled = cb_source.Enabled = true;
-                        btn_select.Text = "查询";
-                        label3.Text = "查询完成\r\n共有数量：" + lv_result.Items.Count;
-                    }));
+
                 }
                 else if (source == 1)
                 {
@@ -195,14 +190,17 @@ namespace Client.Control
                     }
 
 
-                    cbx_device.Invoke(new MethodInvoker(() =>
-                    {
-                        btn_export.Enabled = btn_clear.Enabled = tbx_urls.Enabled = cbx_device.Enabled = cb_source.Enabled = true;
-                        btn_select.Text = "查询";
-                        label3.Text = "查询完成\r\n共有数量：" + lv_result.Items.Count;
-                    }));
+
 
                 }
+
+                cbx_device.Invoke(new MethodInvoker(() =>
+                {
+                    btn_export.Enabled = btn_clear.Enabled = tbx_urls.Enabled = cbx_device.Enabled = cb_source.Enabled = true;
+                    btn_select.Text = "查询";
+                    label3.Text = "查询完成\r\n共有数量：" + lv_result.Items.Count;
+                    cancellationToken.Cancel();
+                }));
             }, cancellationToken.Token);
 
         }
