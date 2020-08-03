@@ -126,54 +126,57 @@ namespace Client.Control
                     var client = new RestSharp.RestClient();
                     client.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36";
 
-                    Parallel.ForEach(urls.AsParallel().AsOrdered().WithDegreeOfParallelism(Environment.ProcessorCount - 1), (u, loopstae) =>
-                    {
+                    Parallel.ForEach(urls, new ParallelOptions() { CancellationToken = cancellationTokenSource.Token, MaxDegreeOfParallelism = Environment.ProcessorCount - 1 }, (u, loopstae) =>
+                          {
 
-                        if (cancellationTokenSource.IsCancellationRequested)
-                            loopstae.Stop(); ;
-                        progressBar2.Invoke(new MethodInvoker(() =>
-                        {
-                            progressBar1.Value = 0;
-                            progressBar2.PerformStep();
-                            lb_total.Text = $"{progressBar2.Value}/{progressBar2.Maximum}";
-                        }));
+                              if (cancellationTokenSource.IsCancellationRequested)
+                                  loopstae.Stop(); ;
+                              progressBar2.Invoke(new MethodInvoker(() =>
+                              {
+                                  progressBar1.Value = 0;
+                                  progressBar2.PerformStep();
+                                  lb_total.Text = $"{progressBar2.Value}/{progressBar2.Maximum}";
+                              }));
 
-                        int a = 0;
+                              int a = 0;
 
-                        Parallel.ForEach(links.AsParallel().AsOrdered().WithDegreeOfParallelism(Environment.ProcessorCount - 1), (m, s) =>
-                        {
-                            try
-                            {
-                                var request = new RestSharp.RestRequest();
-                                if (cancellationTokenSource.IsCancellationRequested)
-                                    return;
-                                var status = "";
-                                if (m.Contains("{url}") && (m.StartsWith("http://") || m.StartsWith("https://")))
-                                {
-                                    request.Timeout = 5000;
-                                    request.Resource = m.Replace("{url}", u);
-                                    var resp = client.Get(request);
-                                    status = resp.StatusCode.ToString();
-                                }
-                                a += 1;
-                                progressBar1.Invoke(new MethodInvoker(() =>
-                                {
-                                    progressBar1.Value = a;
-                                    lb_current.Text = $"{a}/{progressBar1.Maximum}";
-                                    // toolTip1.ToolTipTitle = $"{u} {status}";
-                                    //toolTip1.Show(request.Resource, label8);
-                                    label9.Text = $"{u} {status}\r\n{request.Resource}";
-                                }));
+                              Parallel.ForEach(links, new ParallelOptions() { CancellationToken = cancellationTokenSource.Token, MaxDegreeOfParallelism = Environment.ProcessorCount - 1 }, (m, s) =>
+                                 {
+                                     try
+                                     {
+                                         var request = new RestSharp.RestRequest();
+                                         if (cancellationTokenSource.IsCancellationRequested)
+                                         {
+                                             s.Stop();
+                                             return;
+                                         }
+                                         var status = "";
+                                         if (m.Contains("{url}") && (m.StartsWith("http://") || m.StartsWith("https://")))
+                                         {
+                                             request.Timeout = 5000;
+                                             request.Resource = m.Replace("{url}", u);
+                                             var resp = client.Get(request);
+                                             status = resp.StatusCode.ToString();
+                                         }
+                                         a += 1;
+                                         progressBar1.Invoke(new MethodInvoker(() =>
+                                         {
+                                             progressBar1.Value = a;
+                                             lb_current.Text = $"{a}/{progressBar1.Maximum}";
+                                          // toolTip1.ToolTipTitle = $"{u} {status}";
+                                          //toolTip1.Show(request.Resource, label8);
+                                          label9.Text = $"{u} {status}\r\n{request.Resource}";
+                                         }));
 
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine(ex);
-                            }
-                        });
-                        Task.Delay(2000);
+                                     }
+                                     catch (Exception ex)
+                                     {
+                                         Console.WriteLine(ex);
+                                     }
+                                 });
+                              Task.Delay(2000);
 
-                    });
+                          });
 
                     tbx_urls.Invoke(new MethodInvoker(() =>
                     {

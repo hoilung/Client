@@ -256,198 +256,198 @@ namespace Client.Control
             var maxpage = comboBox1.SelectedIndex;
             btn_check.Text = "取消查询";
             tbx_result.Clear();
-            var maxpara = cbx_qps.SelectedIndex + 1;
+            var maxTask = cbx_qps.SelectedIndex + 1;
             Task.Run(() =>
             {
-                Parallel.ForEach(words.AsParallel().AsOrdered().WithDegreeOfParallelism(maxpara), (item, loopstate) =>
-                {
-                    try
-                    {
-                        if (cancellationToken.IsCancellationRequested)
-                            loopstate.Stop();
-                        var client = new RestClient("https://www.baidu.com");
-                        client.CookieContainer = new System.Net.CookieContainer();
-                        client.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36";
-                        client.FollowRedirects = false;
+                Parallel.ForEach(words, new ParallelOptions() { MaxDegreeOfParallelism = maxTask, CancellationToken = cancellationToken.Token }, (item, loopstate) =>
+                          {
+                              try
+                              {
+                                  if (cancellationToken.IsCancellationRequested)
+                                      loopstate.Stop();
+                                  var client = new RestClient("https://www.baidu.com");
+                                  client.CookieContainer = new System.Net.CookieContainer();
+                                  client.UserAgent = $"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{new Random().Next(70, 80)}.0.{new Random().Next(3000, 4000)}.{new Random().Next(100, 300)} Safari/537.36";
+                                  client.FollowRedirects = false;
+                                  // client.CookieContainer.SetCookies(new Uri("https://baidu.com"), "kleck=37e9bf91aa6b140e37384f2eea05cfe7; max-age=86400; domain=.baidu.com; path=/");
+                                  var status = "";
+                                  var request = new RestRequest();
+                                  var htmldoc = new HtmlAgilityPack.HtmlDocument();
+                                  if (item.Device == "pc")
+                                  {
 
-                        var status = "";
-                        var request = new RestRequest();
-                        var htmldoc = new HtmlAgilityPack.HtmlDocument();
-                        if (item.Device == "pc")
-                        {
+                                      #region pc
+                                      request.Resource = "/";
+                                      var resp = client.Get(request);
 
-                            #region pc
-                            request.Resource = "/";
-                            var resp = client.Get(request);
+                                      request.Resource = $"s?ie=utf-8&wd={System.Web.HttpUtility.UrlEncode(item.Word)}";
+                                      resp = client.Get(request);
+                                      for (int i = 0; i < 2; i++)
+                                      {
+                                          if (!resp.IsSuccessful)
+                                          {
+                                              Task.Delay(2000);
+                                              resp = client.Get(request);
+                                          }
+                                          else
+                                          {
+                                              break;
+                                          }
+                                      }
+                                      progressBar1.Invoke(new MethodInvoker(() =>
+                                      {
+                                          //  toolTip1.Show(status, label7);
+                                          label7.Text = "预热首页：" + item.Word;
+                                      }));
+                                      if (resp.IsSuccessful)
+                                      {
+                                          status = resp.StatusCode.ToString();
+                                          htmldoc.LoadHtml(resp.Content);
+                                          var nodes = htmldoc.DocumentNode.SelectNodes("//div[@id='content_left']/div/h3//a");
+                                          var nextpage = htmldoc.DocumentNode.SelectSingleNode("//*[@id='page']//a[@class='n']");
+                                          if (nodes == null)
+                                              return;
+                                          nodes.ToList().ForEach(m =>
+                                          {
+                                              item.SearchNodes.Add(new Models.SearchNode
+                                              {
+                                                  LinkUrl = m.GetAttributeValue("href", ""),
+                                                  Rank = m.SelectSingleNode(m.XPath + "/../..").GetAttributeValue("id", "0"),
+                                                  Title = m.InnerText
 
-                            request.Resource = $"s?ie=utf-8&wd={System.Web.HttpUtility.UrlEncode(item.Word)}";
-                            resp = client.Get(request);
-                            for (int i = 0; i < 2; i++)
-                            {
-                                if (!resp.IsSuccessful)
-                                {
-                                    Task.Delay(2000);
-                                    resp = client.Get(request);
-                                }
-                                else
-                                {
-                                    break;
-                                }
-                            }
-                            progressBar1.Invoke(new MethodInvoker(() =>
-                            {
-                                //  toolTip1.Show(status, label7);
-                                label7.Text = "预热首页：" + item.Word;                             
-                            }));
-                            if (resp.IsSuccessful)
-                            {
-                                status = resp.StatusCode.ToString();
-                                htmldoc.LoadHtml(resp.Content);
-                                var nodes = htmldoc.DocumentNode.SelectNodes("//div[@id='content_left']/div/h3//a");
-                                var nextpage = htmldoc.DocumentNode.SelectSingleNode("//*[@id='page']//a[@class='n']");
-                                if (nodes == null)
-                                    return;
-                                nodes.ToList().ForEach(m =>
-                                {
-                                    item.SearchNodes.Add(new Models.SearchNode
-                                    {
-                                        LinkUrl = m.GetAttributeValue("href", ""),
-                                        Rank = m.SelectSingleNode(m.XPath + "/../..").GetAttributeValue("id", "0"),
-                                        Title = m.InnerText
+                                              });
+                                          });
+                                          #region 剩余页码                                                
+                                          for (int i = 0; i < maxpage; i++)
+                                          {
+                                              if (nextpage != null)
+                                              {
+                                                  request.Resource = nextpage.GetAttributeValue("href", "");
+                                                  resp = client.Get(request);
+                                                  if (resp.IsSuccessful)
+                                                  {
+                                                      progressBar1.Invoke(new MethodInvoker(() =>
+                                                      {
+                                                          //  toolTip1.Show(status, label7);
+                                                          label7.Text = $"预热{i + 2}页：" + item.Word;
 
-                                    });
-                                });
-                                #region 剩余页码                                                
-                                for (int i = 0; i < maxpage; i++)
-                                {
-                                    if (nextpage != null)
-                                    {
-                                        request.Resource = nextpage.GetAttributeValue("href", "");
-                                        resp = client.Get(request);
-                                        if (resp.IsSuccessful)
-                                        {
-                                            progressBar1.Invoke(new MethodInvoker(() =>
-                                            {
-                                                //  toolTip1.Show(status, label7);
-                                                label7.Text = $"预热{i + 2}页：" + item.Word;
-                                               
-                                            }));
+                                                      }));
 
-                                            htmldoc.LoadHtml(resp.Content);
-                                            nextpage = htmldoc.DocumentNode.SelectSingleNode("//*[@id='page']//a[@class='n'][2]");
-                                            nodes = htmldoc.DocumentNode.SelectNodes("//div[@id='content_left']/div/h3//a");
-                                            if (nodes != null)
-                                            {
-                                                nodes.ToList().ForEach(m =>
-                                                {
-                                                    item.SearchNodes.Add(new Models.SearchNode
-                                                    {
-                                                        LinkUrl = m.GetAttributeValue("href", ""),
-                                                        Rank = m.SelectSingleNode(m.XPath + "/../..").GetAttributeValue("id", "0"),
-                                                        Title = m.InnerText
-                                                    });
-                                                });
-                                            }
-                                        }
-                                        else
-                                        {
+                                                      htmldoc.LoadHtml(resp.Content);
+                                                      nextpage = htmldoc.DocumentNode.SelectSingleNode("//*[@id='page']//a[@class='n'][2]");
+                                                      nodes = htmldoc.DocumentNode.SelectNodes("//div[@id='content_left']/div/h3//a");
+                                                      if (nodes != null)
+                                                      {
+                                                          nodes.ToList().ForEach(m =>
+                                                          {
+                                                              item.SearchNodes.Add(new Models.SearchNode
+                                                              {
+                                                                  LinkUrl = m.GetAttributeValue("href", ""),
+                                                                  Rank = m.SelectSingleNode(m.XPath + "/../..").GetAttributeValue("id", "0"),
+                                                                  Title = m.InnerText
+                                                              });
+                                                          });
+                                                      }
+                                                  }
+                                                  else
+                                                  {
 
-                                        }
+                                                  }
 
-                                        //  Console.WriteLine(Task.CurrentId + "-" + i);
+                                                  //  Console.WriteLine(Task.CurrentId + "-" + i);
 
-                                    }
-                                }
-                                #endregion
-                            }
+                                              }
+                                          }
+                                          #endregion
+                                      }
 
-                            #endregion
-                        }
-                        else
-                        {
-                            #region mobile
+                                      #endregion
+                                  }
+                                  else
+                                  {
+                                      #region mobile
 
-                            client.UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1";
+                                      client.UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1";
 
-                            request.Resource = "/";
-                            var resp = client.Get(request);
-                            request.Resource = $"s?ie=utf-8&wd={System.Web.HttpUtility.UrlEncode(item.Word)}";
-                            resp = client.Get(request);
-                            if (resp.StatusCode == System.Net.HttpStatusCode.Found)
-                            {
+                                      request.Resource = "/";
+                                      var resp = client.Get(request);
+                                      request.Resource = $"s?ie=utf-8&wd={System.Web.HttpUtility.UrlEncode(item.Word)}";
+                                      resp = client.Get(request);
+                                      if (resp.StatusCode == System.Net.HttpStatusCode.Found)
+                                      {
 
-                                var l = resp.Headers.FirstOrDefault(f => f.Name == "Location");
-                                if (l != null)
-                                {
-                                    request.Resource = l.Value.ToString();
-                                    resp = client.Get(request);
-                                }
-                            }
-                            if (resp.IsSuccessful)
-                            {
-                                status = resp.StatusCode.ToString();
+                                          var l = resp.Headers.FirstOrDefault(f => f.Name == "Location");
+                                          if (l != null)
+                                          {
+                                              request.Resource = l.Value.ToString();
+                                              resp = client.Get(request);
+                                          }
+                                      }
+                                      if (resp.IsSuccessful)
+                                      {
+                                          status = resp.StatusCode.ToString();
 
-                                htmldoc.LoadHtml(resp.Content);
-                                var nodes = htmldoc.DocumentNode.SelectNodes("//div[@class='results']/div[@order][@data-log]");
-                                var nextpage = htmldoc.DocumentNode.SelectSingleNode("//a[@class='new-nextpage-only']");
-                                nodes.ToList().ForEach(m =>
-                                {
-                                    var tn = m.SelectSingleNode(m.XPath + "//h3");
-                                    item.SearchNodes.Add(new Models.SearchNode
-                                    {
-                                        Rank = m.GetAttributeValue("order", "0"),
-                                        LinkUrl = Regex.Match(m.GetAttributeValue("data-log", "{'mu':'about:blank'}").Replace("'mu':''", "'mu':'about:blank'"), "(?<='mu':').+(?=')").Value, //string.IsNullOrEmpty(mulnk) ? "about:blank" : mulnk,
-                                        Title = tn != null ? tn.InnerText : ""
-                                    });
-                                });
-                                for (int i = 0; i < maxpage; i++)
-                                {
-                                    if (nextpage != null)
-                                    {
-                                        request.Resource = System.Web.HttpUtility.HtmlDecode(nextpage.GetAttributeValue("href", "").Replace("https://www.baidu.com/", ""));
-                                        resp = client.Get(request);
-                                        htmldoc.LoadHtml(resp.Content);
-                                        nodes = htmldoc.DocumentNode.SelectNodes("//div[@class='results']/div[@order][@data-log]");
-                                        nextpage = htmldoc.DocumentNode.SelectSingleNode("//a[@class='new-nextpage-only' or @class='new-nextpage']");
-                                        if (nodes != null)
-                                        {
-                                            nodes.ToList().ForEach(m =>
-                                            {
-                                                var tn = m.SelectSingleNode(m.XPath + "//h3");
-                                                item.SearchNodes.Add(new Models.SearchNode
-                                                {
-                                                    Rank = maxpage.ToString() + m.GetAttributeValue("order", "0"),
-                                                    LinkUrl = Regex.Match(m.GetAttributeValue("data-log", "{'mu':'about:blank'}").Replace("'mu':''", "'mu':'about:blank'"), "(?<='mu':').+(?=')").Value, //string.IsNullOrEmpty(mulnk) ? "about:blank" : mulnk,
-                                                    Title = tn != null ? tn.InnerText : ""
-                                                });
-                                            });
-                                        }
-                                    }
-                                }
-                            }
-                            #endregion
-                        }
+                                          htmldoc.LoadHtml(resp.Content);
+                                          var nodes = htmldoc.DocumentNode.SelectNodes("//div[@class='results']/div[@order][@data-log]");
+                                          var nextpage = htmldoc.DocumentNode.SelectSingleNode("//a[@class='new-nextpage-only']");
+                                          nodes.ToList().ForEach(m =>
+                                          {
+                                              var tn = m.SelectSingleNode(m.XPath + "//h3");
+                                              item.SearchNodes.Add(new Models.SearchNode
+                                              {
+                                                  Rank = m.GetAttributeValue("order", "0"),
+                                                  LinkUrl = Regex.Match(m.GetAttributeValue("data-log", "{'mu':'about:blank'}").Replace("'mu':''", "'mu':'about:blank'"), "(?<='mu':').+(?=')").Value, //string.IsNullOrEmpty(mulnk) ? "about:blank" : mulnk,
+                                                  Title = tn != null ? tn.InnerText : ""
+                                              });
+                                          });
+                                          for (int i = 0; i < maxpage; i++)
+                                          {
+                                              if (nextpage != null)
+                                              {
+                                                  request.Resource = System.Web.HttpUtility.HtmlDecode(nextpage.GetAttributeValue("href", "").Replace("https://www.baidu.com/", ""));
+                                                  resp = client.Get(request);
+                                                  htmldoc.LoadHtml(resp.Content);
+                                                  nodes = htmldoc.DocumentNode.SelectNodes("//div[@class='results']/div[@order][@data-log]");
+                                                  nextpage = htmldoc.DocumentNode.SelectSingleNode("//a[@class='new-nextpage-only' or @class='new-nextpage']");
+                                                  if (nodes != null)
+                                                  {
+                                                      nodes.ToList().ForEach(m =>
+                                                      {
+                                                          var tn = m.SelectSingleNode(m.XPath + "//h3");
+                                                          item.SearchNodes.Add(new Models.SearchNode
+                                                          {
+                                                              Rank = maxpage.ToString() + m.GetAttributeValue("order", "0"),
+                                                              LinkUrl = Regex.Match(m.GetAttributeValue("data-log", "{'mu':'about:blank'}").Replace("'mu':''", "'mu':'about:blank'"), "(?<='mu':').+(?=')").Value, //string.IsNullOrEmpty(mulnk) ? "about:blank" : mulnk,
+                                                              Title = tn != null ? tn.InnerText : ""
+                                                          });
+                                                      });
+                                                  }
+                                              }
+                                          }
+                                      }
+                                      #endregion
+                                  }
 
-                        progressBar1.Invoke(new MethodInvoker(() =>
-                        {
-                            //  toolTip1.Show(status, label7);
-                            label7.Text = "预热完成：" + item.Word;
-                            progressBar1.PerformStep();
-                        }));
-                        //  });
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex);
-                    }
-                });
-               
+                                  progressBar1.Invoke(new MethodInvoker(() =>
+                                  {
+                                      //  toolTip1.Show(status, label7);
+                                      label7.Text = "预热完成：" + item.Word;
+                                      progressBar1.PerformStep();
+                                  }));
+                                  //  });
+                              }
+                              catch (Exception ex)
+                              {
+                                  Console.WriteLine(ex);
+                              }
+                          }); ;
+
                 if (cancellationToken.IsCancellationRequested)
                     return;
 
                 var client2 = new RestClient("http://www.baidu.com");
                 client2.CookieContainer = new System.Net.CookieContainer();
-                client2.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36";
+                client2.UserAgent = $"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{new Random().Next(70, 80)}.0.{new Random().Next(3000, 4000)}.{new Random().Next(100, 200)} Safari/537.36";
                 client2.FollowRedirects = false;
                 int index = 0;
                 words.ForEach(item =>
@@ -463,28 +463,28 @@ namespace Client.Control
                         {
                             try
                             {
-                                Parallel.ForEach(item.SearchNodes.AsParallel().AsOrdered().WithDegreeOfParallelism(Environment.ProcessorCount - 1), (m, loopstate) =>
-                                  {
-                                      if (cancellationToken.IsCancellationRequested)
-                                          loopstate.Stop();
+                                Parallel.ForEach(item.SearchNodes, new ParallelOptions() { MaxDegreeOfParallelism = maxTask, CancellationToken = cancellationToken.Token }, (m, loopstate) =>
+                                   {
+                                       if (cancellationToken.IsCancellationRequested)
+                                           loopstate.Stop();
 
-                                      var request2 = new RestRequest();
-                                      request2.Resource = m.LinkUrl.Replace("http://www.baidu.com/", "");
-                                      var resp2 = client2.Head(request2);
-                                      if (resp2.StatusCode == System.Net.HttpStatusCode.Found)
-                                      {
-                                          var l = resp2.Headers.FirstOrDefault(f => f.Name == "Location");
-                                          if (l != null && l.Value.ToString().StartsWith("http"))
-                                          {
-                                              m.Url = new Uri(l.Value.ToString());
-                                              if (m.Url.Host.StartsWith(item.Host.Replace("www.", "")))
-                                              {
-                                                  loopstate.Stop();
-                                              }
+                                       var request2 = new RestRequest();
+                                       request2.Resource = m.LinkUrl.Replace("http://www.baidu.com/", "");
+                                       var resp2 = client2.Head(request2);
+                                       if (resp2.StatusCode == System.Net.HttpStatusCode.Found)
+                                       {
+                                           var l = resp2.Headers.FirstOrDefault(f => f.Name == "Location");
+                                           if (l != null && l.Value.ToString().StartsWith("http"))
+                                           {
+                                               m.Url = new Uri(l.Value.ToString());
+                                               if (m.Url.Host.StartsWith(item.Host.Replace("www.", "")))
+                                               {
+                                                   loopstate.Stop();
+                                               }
 
-                                          }
-                                      }
-                                  });
+                                           }
+                                       }
+                                   });
                                 //item.SearchNodes.AsParallel().ForAll((m) =>
                                 //{
 
