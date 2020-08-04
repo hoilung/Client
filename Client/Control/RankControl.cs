@@ -269,7 +269,7 @@ namespace Client.Control
                                   client.CookieContainer = new System.Net.CookieContainer();
                                   client.UserAgent = $"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{new Random().Next(70, 80)}.0.{new Random().Next(3000, 4000)}.{new Random().Next(100, 300)} Safari/537.36";
                                   client.FollowRedirects = false;
-                                  // client.CookieContainer.SetCookies(new Uri("https://baidu.com"), "kleck=37e9bf91aa6b140e37384f2eea05cfe7; max-age=86400; domain=.baidu.com; path=/");
+                                 // client.CookieContainer.SetCookies(new Uri("https://baidu.com"), "kleck=37e9bf91aa6b140e37384f2eea05cfe7; max-age=86400; domain=.baidu.com; path=/");
                                   var status = "";
                                   var request = new RestRequest();
                                   var htmldoc = new HtmlAgilityPack.HtmlDocument();
@@ -371,10 +371,11 @@ namespace Client.Control
 
                                       request.Resource = "/";
                                       var resp = client.Get(request);
-                                      request.Resource = $"s?ie=utf-8&wd={System.Web.HttpUtility.UrlEncode(item.Word)}";
+                                      request.Resource = $"s?&word={System.Web.HttpUtility.UrlEncode(item.Word)}&ts=8330407&t_kt=0&ie=utf-8";
                                       resp = client.Get(request);
                                       if (resp.StatusCode == System.Net.HttpStatusCode.Found)
                                       {
+
 
                                           var l = resp.Headers.FirstOrDefault(f => f.Name == "Location");
                                           if (l != null)
@@ -388,41 +389,62 @@ namespace Client.Control
                                           status = resp.StatusCode.ToString();
 
                                           htmldoc.LoadHtml(resp.Content);
-                                          var nodes = htmldoc.DocumentNode.SelectNodes("//div[@class='results']/div[@order][@data-log]");
-                                          var nextpage = htmldoc.DocumentNode.SelectSingleNode("//a[@class='new-nextpage-only']");
+                                          const string nodexpath = "//div[@class='results']/div[@order][@data-log][@tpl='www_normal']";
+                                          const string nextxpath = "//a[@class='new-nextpage-only' or @class='new-nextpage']";
+
+                                          var nodes = htmldoc.DocumentNode.SelectNodes(nodexpath);
+                                          var nextpage = htmldoc.DocumentNode.SelectSingleNode(nextxpath);
                                           nodes.ToList().ForEach(m =>
                                           {
                                               var tn = m.SelectSingleNode(m.XPath + "//h3");
-                                              item.SearchNodes.Add(new Models.SearchNode
+                                              if (tn == null)
+                                                  return;
+                                              var mu = Regex.Match(m.GetAttributeValue("data-log", "{'mu':'about:blank'}").Replace("'mu':''", "'mu':'about:blank'"), "(?<='mu':').+(?=')").Value;
+                                              if (string.IsNullOrEmpty(mu))
+                                                  mu = "about:blank";
+                                              var node = new Models.SearchNode
                                               {
                                                   Rank = m.GetAttributeValue("order", "0"),
-                                                  LinkUrl = Regex.Match(m.GetAttributeValue("data-log", "{'mu':'about:blank'}").Replace("'mu':''", "'mu':'about:blank'"), "(?<='mu':').+(?=')").Value, //string.IsNullOrEmpty(mulnk) ? "about:blank" : mulnk,
+                                                  Url = new Uri(mu), //string.IsNullOrEmpty(mulnk) ? "about:blank" : mulnk,
                                                   Title = tn != null ? tn.InnerText : ""
-                                              });
+                                              };
+                                              item.SearchNodes.Add(node);
                                           });
                                           for (int i = 0; i < maxpage; i++)
                                           {
-                                              if (nextpage != null)
+                                              if (nextpage == null)
                                               {
-                                                  request.Resource = System.Web.HttpUtility.HtmlDecode(nextpage.GetAttributeValue("href", "").Replace("https://www.baidu.com/", ""));
-                                                  resp = client.Get(request);
-                                                  htmldoc.LoadHtml(resp.Content);
-                                                  nodes = htmldoc.DocumentNode.SelectNodes("//div[@class='results']/div[@order][@data-log]");
-                                                  nextpage = htmldoc.DocumentNode.SelectSingleNode("//a[@class='new-nextpage-only' or @class='new-nextpage']");
-                                                  if (nodes != null)
-                                                  {
-                                                      nodes.ToList().ForEach(m =>
-                                                      {
-                                                          var tn = m.SelectSingleNode(m.XPath + "//h3");
-                                                          item.SearchNodes.Add(new Models.SearchNode
-                                                          {
-                                                              Rank = maxpage.ToString() + m.GetAttributeValue("order", "0"),
-                                                              LinkUrl = Regex.Match(m.GetAttributeValue("data-log", "{'mu':'about:blank'}").Replace("'mu':''", "'mu':'about:blank'"), "(?<='mu':').+(?=')").Value, //string.IsNullOrEmpty(mulnk) ? "about:blank" : mulnk,
-                                                              Title = tn != null ? tn.InnerText : ""
-                                                          });
-                                                      });
-                                                  }
+                                                  break;
                                               }
+                                              request.Resource = System.Web.HttpUtility.HtmlDecode(nextpage.GetAttributeValue("href", "").Replace("https://www.baidu.com/", ""));
+                                              resp = client.Get(request);
+                                              htmldoc.LoadHtml(resp.Content);
+                                              nodes = htmldoc.DocumentNode.SelectNodes(nodexpath);
+                                              nextpage = htmldoc.DocumentNode.SelectSingleNode(nextxpath);
+                                              if (nodes != null)
+                                              {
+                                                  var has = false;
+                                                  nodes.ToList().ForEach(m =>
+                                                  {
+                                                      var tn = m.SelectSingleNode(m.XPath + "//h3");
+                                                      if (tn == null)
+                                                          return;
+                                                      var node = new Models.SearchNode
+                                                      {
+                                                          Rank = ((i + 1) * 10 + m.GetAttributeValue("order", 0)).ToString(),
+                                                          Url = new Uri(Regex.Match(m.GetAttributeValue("data-log", "{'mu':'about:blank'}").Replace("'mu':''", "'mu':'about:blank'"), "(?<='mu':').+(?=')").Value), //string.IsNullOrEmpty(mulnk) ? "about:blank" : mulnk,
+                                                              Title = tn != null ? tn.InnerText : ""
+                                                      };
+                                                      item.SearchNodes.Add(node);
+                                                      if (node.Url.Host.Contains(item.Host))
+                                                      {
+                                                          has = true;
+                                                      }
+                                                  });
+                                                  if (has)
+                                                      break;
+                                              }
+
                                           }
                                       }
                                       #endregion
@@ -500,20 +522,7 @@ namespace Client.Control
                         }
                         else
                         {
-                            item.SearchNodes.ForEach(m =>
-                            {
-                                try
-                                {
-                                    if (m.LinkUrl.StartsWith("about:blank"))
-                                        m.Url = new Uri("about:blank");
-                                    else
-                                        m.Url = new Uri(m.LinkUrl.StartsWith("http") ? m.LinkUrl : "http://" + m.LinkUrl);
-                                }
-                                catch (Exception ex)
-                                {
 
-                                }
-                            });
                         }
                     }
                     if (!item.Rank.Contains("+") && item.Rank.Length < 2)

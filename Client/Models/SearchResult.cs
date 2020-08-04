@@ -43,7 +43,21 @@ namespace Client.Models
                     return $"{Host}\t{Word}\t{Device}\t{model.Rank}";
                 }
             }
-            return $"{Host}\t{Word}\t{Device}\t{(SearchNodes != null ? SearchNodes.Count : 100)}+";
+            var rank = "0";
+            if (SearchNodes == null)
+            {
+                rank = "0";
+            }
+            else if (SearchNodes.Any())
+            {
+                rank = SearchNodes.Last().Rank;
+            }
+            else
+            {
+                rank = SearchNodes.Count.ToString();
+            }
+
+            return $"{Host}\t{Word}\t{Device}\t{(SearchNodes != null ? rank : "100")}+";
             //return base.ToString();
         }
 
